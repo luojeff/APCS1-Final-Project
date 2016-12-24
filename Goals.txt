@@ -1,0 +1,12 @@
+Basics:
+Add indentation support (2 or 4 spaces)
+Add text coloring (Syntax)
+Add clipboard features
+Add Save/Save As/Open features
+Make it look better...
+
+
+Advanced:
+HTML display
+Add keybind features (like emacs or vim)
+
