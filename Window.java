@@ -2,10 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class Window extends JFrame {
+public class Window extends JFrame implements ActionListener {
     private JMenuBar menuBar;
     private JMenu menu1, menu2, menu3;
-    private Editor editField;
+    private EditorArea editField;
     private Container pane;
 
     public Window(){
@@ -39,6 +39,9 @@ public class Window extends JFrame {
 	JMenuItem m2i1 = new JMenuItem("Copy");
 	JMenuItem m2i2 = new JMenuItem("Paste");
 	JMenuItem m3i1 = new JMenuItem("About");
+
+	m1i2.addActionListener(this);
+	m1i2.setActionCommand("QUIT");
 	
 	menu1.add(m1i1);
 	menu1.add(m1i2);
@@ -46,9 +49,21 @@ public class Window extends JFrame {
 	menu2.add(m2i2);
 	menu3.add(m3i1);
 	
-	editField = new Editor();
+	editField = new EditorArea();
 
+	m2i1.addActionListener(this);
+	m2i1.setActionCommand("READ");
+     
 	top.add(menuBar);
 	bottom.add(editField);
+    }
+
+    public void actionPerformed(ActionEvent e){
+	String event = e.getActionCommand();
+	if(event.equals("QUIT")){
+	    System.exit(0);
+	} else if (event.equals("READ")){
+	    System.out.println(editField.getText());
+	}
     }
 }
