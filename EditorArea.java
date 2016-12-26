@@ -7,27 +7,24 @@ import java.awt.event.*;
  * Receives actions and allows for interaction. Also has
  * more appealing text font and size
  */
-public class EditorArea extends JPanel implements KeyListener {
+public class EditorArea extends JPanel {
     JEditorPane ePane;
+    InputMap inMap;
+    ActionMap acMap;
     
     public EditorArea(){
 	super(new BorderLayout());
 	
 	ePane = new JEditorPane();
 	ePane.setFont(new Font("Consolas", Font.PLAIN, 18));
-	ePane.addKeyListener(this);
+
+	inMap = ePane.getInputMap(ePane.WHEN_FOCUSED);
+	acMap = ePane.getActionMap();
+	
+	inMap.put(KeyStroke.getKeyStroke("f"),"pressed");
+	acMap.put("pressed",new KeyAction("pressed"));
 	
 	this.add(ePane);
-    }
-
-    public void keyTyped(KeyEvent e){
-	// System.out.println(e.getKeyChar());
-    }
-
-    public void keyPressed(KeyEvent e){
-    }
-    
-    public void keyReleased(KeyEvent e){
     }
 
     public String getText(){
@@ -36,5 +33,23 @@ public class EditorArea extends JPanel implements KeyListener {
 
     public void setText(String contents){
 	ePane.setText(contents);
+    }
+
+    /**
+     *Action command for when a certain
+     *key (or binding) is pressed. 
+     */
+    public class KeyAction extends AbstractAction {
+	private String action;
+	
+	public KeyAction(String action){
+	    this.action = action;
+	};
+
+	public void actionPerformed(ActionEvent e){
+	    if(e.equals("pressed")){
+		System.out.println("Pressed F key!");
+	    }
+	}
     }
 }

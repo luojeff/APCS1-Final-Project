@@ -9,6 +9,7 @@ public class Window extends JFrame implements ActionListener {
     private JLabel label;
     private JMenuBar menuBar;
     private JMenu menu1, menu2, menu3;
+    private JScrollPane scroll;
     private EditorArea editField;
     private Container pane;
     
@@ -43,6 +44,12 @@ public class Window extends JFrame implements ActionListener {
 	menuBar.add(menu2);
 	menuBar.add(menu3);
 
+	/*
+	ArrayList<JMenuItem> menu1list = new ArrayList<JMenuItem>();
+	ArrayList<JMenuItem> menu2list = new ArrayList<JMenuItem>();
+	ArrayList<JMenuItem> menu3list = new ArrayList<JMenuItem>();
+	*/
+
 	JMenuItem m1i1 = new JMenuItem("Open");
 	JMenuItem m1i2 = new JMenuItem("Exit");
 	JMenuItem m2i1 = new JMenuItem("Copy");
@@ -70,7 +77,11 @@ public class Window extends JFrame implements ActionListener {
 	menuPanel.add(menuBar);
 	menuPanel.add(label);
 	menuPanel.add(textField);
-	textPanel.add(editField);
+	
+	scroll = new JScrollPane(editField);
+	scroll.getVerticalScrollBar().setUnitIncrement(18);
+	textPanel.add(scroll, BorderLayout.CENTER);
+		scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     }
 
     public void actionPerformed(ActionEvent e){
@@ -92,8 +103,6 @@ public class Window extends JFrame implements ActionListener {
      *Pops up a file explorer dialog that the user can use
      *to find files to open.
      *@param read true if you want to read a file, false if you want to write to a file
-     *@exception IOException if there is an error parsing the file
-     *@exception FileNotFoundException if the file does not exist
      */
     public void revealFileExplorer(Boolean read){
 	JFileChooser fChooser = new JFileChooser();
