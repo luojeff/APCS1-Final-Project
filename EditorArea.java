@@ -9,8 +9,6 @@ import java.awt.event.*;
  */
 public class EditorArea extends JPanel {
     JEditorPane ePane;
-    InputMap inMap;
-    ActionMap acMap;
     
     public EditorArea(){
 	super(new BorderLayout());
@@ -18,11 +16,10 @@ public class EditorArea extends JPanel {
 	ePane = new JEditorPane();
 	ePane.setFont(new Font("Consolas", Font.PLAIN, 18));
 
-	inMap = ePane.getInputMap(ePane.WHEN_FOCUSED);
-	acMap = ePane.getActionMap();
-	
-	inMap.put(KeyStroke.getKeyStroke("f"),"pressed");
-	acMap.put("pressed",new KeyAction("pressed"));
+	// Demo: ePane.getInputMap().put(KeyStroke.getKeyStroke("A"),"keyA");
+	// ePane.getActionMap().put("keyA", new KeyAction("A"));
+	ePane.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_C,KeyEvent.CTRL_MASK),"keyCopy");
+	ePane.getActionMap().put("keyCopy", new KeyAction("copy"));
 	
 	this.add(ePane);
     }
@@ -35,20 +32,23 @@ public class EditorArea extends JPanel {
 	ePane.setText(contents);
     }
 
+    public void activateSequence(String seq){
+    }
+				 
     /**
      *Action command for when a certain
      *key (or binding) is pressed. 
      */
-    public class KeyAction extends AbstractAction {
-	private String action;
+    public static class KeyAction extends AbstractAction {
+	private String sequence;
 	
-	public KeyAction(String action){
-	    this.action = action;
+	public KeyAction(String sequence){
+	    this.sequence = sequence;
 	};
 
-	public void actionPerformed(ActionEvent e){
-	    if(e.equals("pressed")){
-		System.out.println("Pressed F key!");
+	public void actionPerformed(ActionEvent e){ 
+	    if(sequence.equals("copy")){
+		System.out.println("Highlighted text copied!");
 	    }
 	}
     }

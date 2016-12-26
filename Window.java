@@ -120,6 +120,7 @@ public class Window extends JFrame implements ActionListener {
 			contents += line + '\n';
 			line = reader.readLine();
 		    }
+		    reader.close();
 		    editField.setText(contents);
 		} catch(FileNotFoundException e){
 		    System.out.println("File not found!");
