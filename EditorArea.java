@@ -21,7 +21,7 @@ public class EditorArea extends JPanel implements KeyListener {
     }
 
     public void keyTyped(KeyEvent e){
-	System.out.println(e.getKeyCode());
+	// System.out.println(e.getKeyChar());
     }
 
     public void keyPressed(KeyEvent e){
@@ -32,5 +32,9 @@ public class EditorArea extends JPanel implements KeyListener {
 
     public String getText(){
 	return ePane.getText();
+    }
+
+    public void setText(String contents){
+	ePane.setText(contents);
     }
 }
