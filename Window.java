@@ -85,7 +85,7 @@ public class Window extends JFrame implements ActionListener {
 	label.setVisible(false);
 
 	menuPanel.add(menuBar);
-	menuPanel.add(label);	
+	menuPanel.add(label);
 
 	scroll = new JScrollPane(editField);
 	scroll.getVerticalScrollBar().setUnitIncrement(18);
@@ -103,26 +103,25 @@ public class Window extends JFrame implements ActionListener {
 	    System.out.println(editField.getText());
 	    break;
 	case "OPEN":
-	    FileExplorer a = new FileExplorer(true);
-	    a.revealExplorer();
-	    editField.setText(a.getContents());
-	    // revealFileExplorer(true);
+	    FileExplorer fe1 = new FileExplorer(true);
+	    fe1.revealExplorer();
+	    editField.setText(fe1.getContents());
 	    break;
 	case "SAVEAS":
-	    // revealFileExplorer(false);
+	    FileExplorer fe2 = new FileExplorer(false);
+	    fe2.revealExplorer();
 	    break;
 	}
     }
-	
+
     /**
-     * Opens a file explorer which allows for the
-     * user to either choose a file and copy
-     * the contents into the text component or 
-     * choose a directory to save a file into
+     * Opens a file explorer which allows for the user to either choose a file
+     * and copy the contents into the text component or choose a directory to
+     * save a file into
      */
     public class FileExplorer {
 	private JFileChooser fileChooser;
-	private File chosenFile;
+	private File file;
 	private String contents = "";
 	private Boolean read;
 
@@ -133,12 +132,12 @@ public class Window extends JFrame implements ActionListener {
 	public void revealExplorer() {
 	    fileChooser = new JFileChooser();
 	    int val = fileChooser.showOpenDialog(null);
-	    chosenFile = fileChooser.getSelectedFile();;
 	    if (val == JFileChooser.APPROVE_OPTION) {
 		if (read == true) {
-		    readFile(chosenFile);
+		    file = fileChooser.getSelectedFile();
+		    readFile(file);
 		} else {
-		    writeFile(chosenFile);
+		    writeFile(file, "hi");
 		}
 	    }
 	}
@@ -156,31 +155,23 @@ public class Window extends JFrame implements ActionListener {
 		    line = reader.readLine();
 		}
 		reader.close();
-	    } catch (NullPointerException e) {
-		System.out.println("Something's Wrong!");
 	    } catch (FileNotFoundException e) {
 		System.out.println("File not found!");
 	    } catch (IOException e) {
 		System.out.println("Error in parsing file!");
-	    } 
+	    }
 	}
-		
-	public void writeFile(File file){
+
+	public void writeFile(File newFile, String content) {
 	    try {
-		BufferedReader reader = new BufferedReader(new FileReader(file));
-		String line = reader.readLine();
-		while (line != null) {
-		    contents += line + '\n';
-		    line = reader.readLine();
+		if (!newFile.exists()) {
+		    newFile.createNewFile();
 		}
-		reader.close();
-	    } catch (NullPointerException e) {
-		System.out.println("Something's Wrong!");
-	    } catch (FileNotFoundException e) {
-		System.out.println("File not found!");
+		BufferedWriter writer = new BufferedWriter(new FileWriter(newFile));
+		writer.write(content);
 	    } catch (IOException e) {
 		System.out.println("Error in parsing file!");
-	    } 
+	    }
 	}
     }
 }

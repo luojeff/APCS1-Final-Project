@@ -31,9 +31,6 @@ public class EditorArea extends JPanel {
     public void setText(String contents){
 	ePane.setText(contents);
     }
-
-    public void activateSequence(String seq){
-    }
 				 
     /**
      *Action command for when a certain
