@@ -120,7 +120,7 @@ public class Window extends JFrame implements ActionListener {
      * save a file into
      */
     public class FileExplorer {
-	private JFileChooser fileChooser;
+
 	private File file;
 	private String contents = "";
 	private Boolean read;
@@ -130,14 +130,28 @@ public class Window extends JFrame implements ActionListener {
 	}
 
 	public void revealExplorer() {
-	    fileChooser = new JFileChooser();
-	    int val = fileChooser.showOpenDialog(null);
-	    if (val == JFileChooser.APPROVE_OPTION) {
-		if (read == true) {
+	    // JDialog.setDefaultLookAndFeelDecorated(false);
+	    JFileChooser fileChooser = new JFileChooser();
+	    if (read) {
+		int val = fileChooser.showOpenDialog(null);
+		if (val == JFileChooser.APPROVE_OPTION) {
 		    file = fileChooser.getSelectedFile();
 		    readFile(file);
-		} else {
-		    writeFile(file, "hi");
+		}
+	    } else {
+		int val = fileChooser.showSaveDialog(null);
+		if (val == JFileChooser.APPROVE_OPTION) {
+		    file = fileChooser.getSelectedFile();
+		    if (!file.exists()) {
+			writeFile(file, editField.getText());
+		    } else {
+			int response = JOptionPane.showConfirmDialog(null,
+								     "Do you want to overwrite an existing file?", "Confirm",
+								     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if (response == JOptionPane.YES_OPTION) {
+			    writeFile(file, editField.getText());
+			}
+		    }
 		}
 	    }
 	}
@@ -169,6 +183,7 @@ public class Window extends JFrame implements ActionListener {
 		}
 		BufferedWriter writer = new BufferedWriter(new FileWriter(newFile));
 		writer.write(content);
+		writer.close();
 	    } catch (IOException e) {
 		System.out.println("Error in parsing file!");
 	    }
