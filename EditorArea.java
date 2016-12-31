@@ -13,7 +13,7 @@ public class EditorArea extends JPanel {
     public EditorArea(){
         super(new BorderLayout());
         
-        ePane = new JEditorPane("x-code/html", "");
+        ePane = new JEditorPane("text/html_code", "");
         ePane.setFont(new Font("Consolas", Font.PLAIN, 18));
 
         // Demo: ePane.getInputMap().put(KeyStroke.getKeyStroke("A"),"keyA");
@@ -23,7 +23,7 @@ public class EditorArea extends JPanel {
         
         this.add(ePane);
         //Tests
-        System.out.println(JEditorPane.getEditorKitClassNameForContentType("x-code/html"));
+        //System.out.println(JEditorPane.getEditorKitClassNameForContentType("x-code/html"));
     }
 
     public String getText(){

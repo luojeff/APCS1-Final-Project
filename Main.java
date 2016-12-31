@@ -12,6 +12,6 @@ public class Main {
     * before window creation.
     */
     public static void setup() {
-        JEditorPane.registerEditorKitForContentType("x-code/html", "HtmlCodeKit");
+        JEditorPane.registerEditorKitForContentType("text/html_code", "HtmlCodeKit");
     }
 }
