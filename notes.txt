@@ -3,18 +3,21 @@ DefaultEditorKit: for plain text
   StyledEditorKit: for styled text
     HTMLEditorKit: for visual html
 
-Document Objects:
+javax.swing.text
+Document Interface:
   - addDocumentListener(DocumentListener)
+  - getDefaultRootElement() --> Element
+  - getRootElements() --> Element[] [for if you have many ways of modeling a document]
 
-
-DocumentListener subclasses:
+javax.swing.event
+DocumentListener Interface:
   - insertUpdate  [typing]
   - removeUpdate  [backspace]
   - changedUpdate [for styles]
   - each of these takes a DocumentEvent param
 
 javax.swing.event
-DocumentEvent Object:
+DocumentEvent Interface:
   - getType().toString() [CHANGE INSERT REMOVE]
   - getOffset() --> int
   - getDocument() --> Document
@@ -27,3 +30,17 @@ ElementChange Interface:
   - getIndex() --> int [returns the place where the change happened within element]
   - getChildrenAdded() --> Element[]
   - getChildrenRemoved() --> Element[]
+
+javax.swing.text
+Element Interface:
+  getAttributes():
+    returns: javax.swing.text.AttributeSet
+  getDocument(): returns the Document
+  getElement(int index): returns the child element at that index
+  getElementCount(): number of children
+  getElementIndex(int offset): given the character offset, returns the index of the element closest to it
+  getEndOffset(): the place in the document that this element ends at
+  getName(): string
+  getParentElement: null if root, returns parent element otherwise
+  getStartOffset(): offset in document that this starts at
+  isLeaf(): An element that may have children, even if it has none, will return false
