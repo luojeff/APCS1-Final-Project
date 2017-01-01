@@ -1,0 +1,4 @@
+##Notes##
+DefaultEditorKit: for plain text
+  StyledEditorKit: for styled text
+    HTMLEditorKit: for visual html
