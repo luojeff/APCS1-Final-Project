@@ -2,3 +2,28 @@
 DefaultEditorKit: for plain text
   StyledEditorKit: for styled text
     HTMLEditorKit: for visual html
+
+Document Objects:
+  - addDocumentListener(DocumentListener)
+
+
+DocumentListener subclasses:
+  - insertUpdate  [typing]
+  - removeUpdate  [backspace]
+  - changedUpdate [for styles]
+  - each of these takes a DocumentEvent param
+
+javax.swing.event
+DocumentEvent Object:
+  - getType().toString() [CHANGE INSERT REMOVE]
+  - getOffset() --> int
+  - getDocument() --> Document
+  - getLength() --> int [usually 1]
+  - getChange(Element) --> DocumentEvent.ElementChange [changes for an element]
+
+javax.swing.event.DocumentEvent.ElementChange
+ElementChange Interface:
+  - getElement()       [returns the target element]
+  - getIndex() --> int [returns the place where the change happened within element]
+  - getChildrenAdded() --> Element[]
+  - getChildrenRemoved() --> Element[]
