@@ -1,6 +1,9 @@
 import javax.swing.*;
+import javax.swing.text.*;
+import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.HashMap;
 
 /** 
  * Main component for displaying the area for editing text.
@@ -22,6 +25,9 @@ public class EditorArea extends JPanel {
         ePane.getActionMap().put("keyCopy", new KeyAction("copy"));
         
         this.add(ePane);
+
+        Document doc = ePane.getDocument();
+        doc.addDocumentListener(new TestListener());
         //Tests
         //System.out.println(JEditorPane.getEditorKitClassNameForContentType("x-code/html"));
     }
@@ -32,6 +38,20 @@ public class EditorArea extends JPanel {
 
     public void setText(String contents){
         ePane.setText(contents);
+    }
+
+    /**
+    * Creates a hashmap where actions are stored by name
+    * and includes all the supported ones from the textComponent
+    */
+    private HashMap<Object, Action> createActionTable(JTextComponent textComponent) {
+        HashMap<Object, Action> actions = new HashMap<Object, Action>();
+        Action[] actionsArray = textComponent.getActions();
+        for (int i = 0; i < actionsArray.length; i++) {
+            Action a = actionsArray[i];
+            actions.put(a.getValue(Action.NAME), a);
+        }
+        return actions;
     }
                  
     /**
@@ -50,5 +70,15 @@ public class EditorArea extends JPanel {
                 System.out.println("Highlighted text copied!");
             }
         }
+    }
+
+    private static class TestListener implements DocumentListener {
+        public void insertUpdate(DocumentEvent evt) {
+            System.out.println(evt.getType().toString() + " " + evt.getLength());
+            Element root = evt.getDocument().getDefaultRootElement();
+            System.out.println(root.getName() + "  has  " + root.getElementCount());
+        }
+        public void removeUpdate(DocumentEvent evt) {}
+        public void changedUpdate(DocumentEvent evt) {}
     }
 }
