@@ -5,9 +5,12 @@ DefaultEditorKit: for plain text
 
 javax.swing.text
 Document Interface:
-  - addDocumentListener(DocumentListener)
-  - getDefaultRootElement() --> Element
-  - getRootElements() --> Element[] [for if you have many ways of modeling a document]
+  addDocumentListener(DocumentListener)
+  getDefaultRootElement() --> Element
+  getRootElements() --> Element[] [for if you have many ways of modeling a document]
+  insertString(int offset, String str, AttributeSet a):
+    throws: javax.swing.text.BadLocationException
+    events: triggers DocumentEvent of type Insert and an UndoableEditEvent if succesful
 
 javax.swing.event
 DocumentListener Interface:
