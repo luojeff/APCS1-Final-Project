@@ -17,6 +17,7 @@ public class EditorArea extends JPanel {
         super(new BorderLayout());
         
         ePane = new JEditorPane("text/html_code", "");
+        ePane.setDocument(new DefaultStyledDocument());
         ePane.setFont(new Font("Consolas", Font.PLAIN, 18));
 
         // Demo: ePane.getInputMap().put(KeyStroke.getKeyStroke("A"),"keyA");
@@ -75,6 +76,8 @@ public class EditorArea extends JPanel {
     private static class TestListener implements DocumentListener {
         public void insertUpdate(DocumentEvent evt) {
             System.out.println(evt.getType().toString() + " " + evt.getLength());
+            Element[] roots = evt.getDocument().getRootElements();
+            for(Element r : roots) {System.out.print("  , " + r.getName());}
             Element root = evt.getDocument().getDefaultRootElement();
             System.out.println(root.getName() + "  has  " + root.getElementCount());
         }
