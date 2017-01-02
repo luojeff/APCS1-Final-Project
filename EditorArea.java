@@ -17,7 +17,10 @@ public class EditorArea extends JPanel {
         super(new BorderLayout());
         
         ePane = new JEditorPane("text/html_code", "");
-        ePane.setDocument(new DefaultStyledDocument());
+        DefaultStyledDocument doc = new DefaultStyledDocument();
+        doc.setDocumentFilter(new TestFilter());
+        ((AbstractDocument)doc).addDocumentListener(new TestListener());
+        ePane.setDocument(doc);
         ePane.setFont(new Font("Consolas", Font.PLAIN, 18));
 
         // Demo: ePane.getInputMap().put(KeyStroke.getKeyStroke("A"),"keyA");
@@ -27,8 +30,6 @@ public class EditorArea extends JPanel {
         
         this.add(ePane);
 
-        Document doc = ePane.getDocument();
-        doc.addDocumentListener(new TestListener());
         //Tests
         //System.out.println(JEditorPane.getEditorKitClassNameForContentType("x-code/html"));
     }
@@ -77,6 +78,9 @@ public class EditorArea extends JPanel {
         public void insertUpdate(DocumentEvent evt) {
             System.out.print(evt.getType().toString() + " " + evt.getLength() + "; ");
             Element root = evt.getDocument().getDefaultRootElement();
+            if(evt.getDocument() instanceof DefaultStyledDocument) {
+                System.out.print(" is a DefaultStyledDocument; ");
+            }
             System.out.println(root.getName() + "  has  " + root.getElementCount());
         }
         public void removeUpdate(DocumentEvent evt) {}
