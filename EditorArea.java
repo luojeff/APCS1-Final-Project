@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -6,31 +7,26 @@ import java.util.HashMap;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JEditorPane;
 import javax.swing.JPanel;
+import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Document;
-import javax.swing.text.Element;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
+import javax.swing.event.*;
+import javax.swing.text.*;
 
 /**
  * Main component for displaying the area for editing text. Receives actions and
  * allows for interaction. Also has more appealing text font and size
  */
 public class EditorArea extends JPanel {
-    JEditorPane ePane;
-    static SimpleAttributeSet attrs;
+    public JTextPane ePane;
+    public SimpleAttributeSet attrs;
 
     public EditorArea() {
 	super(new BorderLayout());
 
-	ePane = new JEditorPane("text/html_code", "");
-	ePane.setDocument(new DefaultStyledDocument());
+	StyledDocument doc = new DefaultStyledDocument();
+	ePane = new JTextPane(doc);
+	//ePane.setDocument(new DefaultStyledDocument());
 	ePane.setFont(new Font("Consolas", Font.PLAIN, 18));
 
 	// Demo: ePane.getInputMap().put(KeyStroke.getKeyStroke("A"),"keyA");
@@ -41,18 +37,24 @@ public class EditorArea extends JPanel {
 
 	this.add(ePane);
 
-	Document doc = ePane.getDocument();
+	//Document doc = ePane.getDocument();
 	doc.addDocumentListener(new TestListener());
 	attrs = new SimpleAttributeSet();
+	attrs.addAttribute(StyleConstants.CharacterConstants.Italic, Boolean.TRUE);
+	attrs.addAttribute(StyleConstants.CharacterConstants.Foreground, Color.red);
+	ePane.setCharacterAttributes(attrs, true);
 		
-	ePane.revalidate();
-
 	// Tests
 	// System.out.println(JEditorPane.getEditorKitClassNameForContentType("x-code/html"));
+	ePane.revalidate();
     }
 
     public String getText() {
 	return ePane.getText();
+    }
+	
+    public JTextPane getEditor(){
+	return ePane;
     }
 
     public void setText(String contents) {
@@ -90,6 +92,7 @@ public class EditorArea extends JPanel {
 	}
     }
 
+	
     private static class TestListener implements DocumentListener {
 	public void insertUpdate(DocumentEvent evt) {
 	    /*
@@ -101,11 +104,6 @@ public class EditorArea extends JPanel {
 	     */
 
 	    System.out.println(evt.getLength());
-	    this.updateText();
-	}
-
-	private void updateText() {
-	    attrs.addAttribute(StyleConstants.CharacterConstants.Italic, Boolean.TRUE);
 	}
 
 	public void removeUpdate(DocumentEvent evt) {
