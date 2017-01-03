@@ -78,8 +78,13 @@ public class EditorArea extends JPanel {
         public void insertUpdate(DocumentEvent evt) {
             System.out.print(evt.getType().toString() + " " + evt.getLength() + "; ");
             Element root = evt.getDocument().getDefaultRootElement();
+	    DefaultStyledDocument doc = (DefaultStyledDocument)evt.getDocument();
             if(evt.getDocument() instanceof DefaultStyledDocument) {
                 System.out.print(" is a DefaultStyledDocument; ");
+		DocumentFilter f = doc.getDocumentFilter();
+		if(f instanceof TestFilter) {
+		    System.out.print(" is a TestFilter; ");
+		}
             }
             System.out.println(root.getName() + "  has  " + root.getElementCount());
         }
