@@ -1,5 +1,4 @@
 import javax.swing.*;
-import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -8,7 +7,7 @@ public class Window extends JFrame implements ActionListener {
     private JPanel menuPanel, textPanel, mainPanel;
     private JLabel label;
     private JMenuBar menuBar;
-    private JMenu menu1, menu2, menu3;
+    private JMenu menu1, menu2, menu3, menu4;
     private JScrollPane scroll;
     private EditorArea editField;
     private Container pane;
@@ -40,11 +39,13 @@ public class Window extends JFrame implements ActionListener {
 	menuBar = new JMenuBar();
 	menu1 = new JMenu("File");
 	menu2 = new JMenu("Edit");
+	menu4 = new JMenu("Properties");
 	menu3 = new JMenu("Help");
 	menuBar.add(menu1);
 	menuBar.add(menu2);
+	menuBar.add(menu4);
 	menuBar.add(menu3);
-
+	
 	/*
 	 * ArrayList<JMenuItem> menu1list = new ArrayList<JMenuItem>();
 	 * ArrayList<JMenuItem> menu2list = new ArrayList<JMenuItem>();
@@ -58,6 +59,7 @@ public class Window extends JFrame implements ActionListener {
 	JMenuItem m2i1 = new JMenuItem("Copy");
 	JMenuItem m2i2 = new JMenuItem("Paste");
 	JMenuItem m3i1 = new JMenuItem("About");
+	JMenuItem m4i1 = new JMenuItem("Appearance");
 	menu1.add(m1i1);
 	menu1.add(m1i2);
 	menu1.add(m1i3);
@@ -65,6 +67,7 @@ public class Window extends JFrame implements ActionListener {
 	menu2.add(m2i1);
 	menu2.add(m2i2);
 	menu3.add(m3i1);
+	menu4.add(m4i1);
 
 	m1i1.addActionListener(this);
 	m1i2.addActionListener(this);
@@ -76,6 +79,7 @@ public class Window extends JFrame implements ActionListener {
 	m1i2.setActionCommand("SAVE");
 	m1i3.setActionCommand("SAVEAS");
 	m1i4.setActionCommand("QUIT");
+	m4i1.setActionCommand("FONT");
 
 	// Currently assigned to |Copy|
 	m2i1.setActionCommand("READ");
@@ -111,6 +115,10 @@ public class Window extends JFrame implements ActionListener {
 	    FileExplorer fe2 = new FileExplorer(false);
 	    fe2.revealExplorer();
 	    break;
+	case "FONT":
+	    changeFont("Arial", 16);
+	    textPanel.revalidate();
+	    break;
 	}
     }
 
@@ -145,9 +153,8 @@ public class Window extends JFrame implements ActionListener {
 		    if (!file.exists()) {
 			writeFile(file, editField.getText());
 		    } else {
-			int response = JOptionPane.showConfirmDialog(null,
-								     "Do you want to overwrite an existing file?", "Confirm",
-								     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			int response = JOptionPane.showConfirmDialog(null, "Do you want to overwrite an existing file?",
+								     "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (response == JOptionPane.YES_OPTION) {
 			    writeFile(file, editField.getText());
 			}

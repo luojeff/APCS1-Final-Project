@@ -18,16 +18,17 @@ import javax.swing.text.*;
  * allows for interaction. Also has more appealing text font and size
  */
 public class EditorArea extends JPanel {
-    public JTextPane ePane;
-    public SimpleAttributeSet attrs;
+    private JTextPane ePane;
+    private SimpleAttributeSet attrs;
+    private Font font;
 
     public EditorArea() {
 	super(new BorderLayout());
 
 	StyledDocument doc = new DefaultStyledDocument();
 	ePane = new JTextPane(doc);
-	//ePane.setDocument(new DefaultStyledDocument());
-	ePane.setFont(new Font("Consolas", Font.PLAIN, 18));
+	font = new Font("Consolas", Font.PLAIN, 18);
+	ePane.setFont(font);
 
 	// Demo: ePane.getInputMap().put(KeyStroke.getKeyStroke("A"),"keyA");
 	// ePane.getActionMap().put("keyA", new KeyAction("A"));
@@ -61,6 +62,10 @@ public class EditorArea extends JPanel {
 	ePane.setText(contents);
     }
 
+    public void changeFont(String fontname, int size){
+	font = new Font(fontname, Font.PLAIN, size);
+    }
+    
     /**
      * Creates a hashmap where actions are stored by name and includes all the
      * supported ones from the textComponent
