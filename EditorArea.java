@@ -14,6 +14,7 @@ public class EditorArea extends JPanel {
     private StyledDocument doc;
     private SimpleAttributeSet attrs;
     private Font font;
+    private TestFilter tf;
 
     public EditorArea() {
 	super(new BorderLayout());
@@ -21,6 +22,7 @@ public class EditorArea extends JPanel {
 	doc = new DefaultStyledDocument();
 	ePane = new JTextPane(doc);
 	font = new Font("Consolas", Font.PLAIN, 18);
+	tf = new TestFilter();
 	ePane.setFont(font);
 
 	/* - - - - - KEYBIND INPUT/ACTION(MAP) FORMAT - - - - -
@@ -36,6 +38,8 @@ public class EditorArea extends JPanel {
 	this.add(ePane);
 
 	doc.addDocumentListener(new TestListener());
+	((AbstractDocument)doc).setDocumentFilter(tf);
+	
 	attrs = new SimpleAttributeSet();
 	//trs.addAttribute(StyleConstants.CharacterConstants.Italic, Boolean.TRUE);
 	//trs.addAttribute(StyleConstants.CharacterConstants.Foreground, Color.red);	
