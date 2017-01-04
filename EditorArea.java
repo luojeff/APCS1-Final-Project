@@ -46,7 +46,6 @@ public class EditorArea extends JPanel {
 
     public String getText() {
 	return ePane.getText();
->>>>>>> p-testing
     }
 	
     public JTextPane getEditor(){
@@ -75,7 +74,6 @@ public class EditorArea extends JPanel {
 	return actions;
     }
 
->>>>>>> p-testing
     /**
      * Action command for when a certain key (or binding) is pressed.
      */
@@ -104,7 +102,7 @@ public class EditorArea extends JPanel {
 	     * root.getElementCount());
 	     */
 
-	    System.out.println(evt.getLength());
+	    //System.out.println(evt.getLength());
 	}
 
 	public void removeUpdate(DocumentEvent evt) {

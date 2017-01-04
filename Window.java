@@ -116,7 +116,7 @@ public class Window extends JFrame implements ActionListener {
 	    fe2.revealExplorer();
 	    break;
 	case "FONT":
-	    changeFont("Arial", 16);
+	    editField.changeFont("Arial", 16);
 	    textPanel.revalidate();
 	    break;
 	}
@@ -195,6 +195,5 @@ public class Window extends JFrame implements ActionListener {
 		System.out.println("Error in parsing file!");
 	    }
 	}
->>>>>>> p-testing
     }
 }
