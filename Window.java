@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.awt.Toolkit;
+import java.awt.datatransfer.*;
 
 public class Window extends JFrame implements ActionListener {
     private JPanel menuPanel, textPanel, mainPanel;
@@ -56,10 +58,11 @@ public class Window extends JFrame implements ActionListener {
 	JMenuItem m1i2 = new JMenuItem("Save");
 	JMenuItem m1i3 = new JMenuItem("Save As");
 	JMenuItem m1i4 = new JMenuItem("Exit");
-	JMenuItem m2i1 = new JMenuItem("Copy");
+	JMenuItem m2i1 = new JMenuItem("Copy All");
 	JMenuItem m2i2 = new JMenuItem("Paste");
 	JMenuItem m3i1 = new JMenuItem("About");
 	JMenuItem m4i1 = new JMenuItem("Appearance");
+	
 	menu1.add(m1i1);
 	menu1.add(m1i2);
 	menu1.add(m1i3);
@@ -74,15 +77,18 @@ public class Window extends JFrame implements ActionListener {
 	m1i3.addActionListener(this);
 	m1i4.addActionListener(this);
 	m2i1.addActionListener(this);
+	m2i2.addActionListener(this);
+	m3i1.addActionListener(this);
+	m4i1.addActionListener(this);
 
 	m1i1.setActionCommand("OPEN");
 	m1i2.setActionCommand("SAVE");
 	m1i3.setActionCommand("SAVEAS");
 	m1i4.setActionCommand("QUIT");
+	m2i1.setActionCommand("COPY");
+	m2i2.setActionCommand("PASTE");
+	m3i1.setActionCommand("ABOUT");
 	m4i1.setActionCommand("FONT");
-
-	// Currently assigned to |Copy|
-	m2i1.setActionCommand("READ");
 
 	editField = new EditorArea();
 	label = new JLabel("Save as: ");
@@ -98,13 +104,24 @@ public class Window extends JFrame implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
+	Clipboard clipBoard = Toolkit.getDefaultToolkit().getSystemClipboard();
 	String event = e.getActionCommand();
+	
 	switch (event) {
 	case "QUIT":
 	    System.exit(0);
 	    break;
-	case "READ":
-	    System.out.println(editField.getText());
+	case "COPY":
+	    StringSelection str = new StringSelection(editField.getText());
+	    clipBoard.setContents(str, null);
+	    break;
+	case "PASTE":
+	    Transferable t = clipBoard.getContents(this);
+	    try {
+		editField.appendText((String) t.getTransferData(DataFlavor.stringFlavor));
+	    } catch (Exception ex){
+		System.out.println("No flavor!");
+	    }
 	    break;
 	case "OPEN":
 	    FileExplorer fe1 = new FileExplorer(true);
@@ -116,7 +133,9 @@ public class Window extends JFrame implements ActionListener {
 	    fe2.revealExplorer();
 	    break;
 	case "FONT":
-	    changeFont("Arial", 16);
+	    editField.changeFont("Arial", 16);
+	    editField.addFontStyle(true, true, "INSERT_STYLE");
+	    editField.insertAS();
 	    textPanel.revalidate();
 	    break;
 	}
