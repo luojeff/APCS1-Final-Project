@@ -126,33 +126,34 @@ public class EditorArea extends JPanel {
 
 	
     private static class TestListener implements DocumentListener {
-	public void insertUpdate(DocumentEvent evt) {
-	    System.out.print(evt.getType().toString() + " " + evt.getLength()
-			     + "; "); 
-	    Element root = evt.getDocument().getDefaultRootElement();
-	    System.out.println(root.getName() + "  has  " +
-			       root.getElementCount() + "; " + evt.getLength());
-	    System.out.println(discoverChildren(root));
-	    
-	}
+    	public void insertUpdate(DocumentEvent evt) {
+    	    System.out.print(evt.getType().toString() + " " + evt.getLength()
+    			     + "; "); 
+    	    Element root = evt.getDocument().getDefaultRootElement();
+    	    System.out.println(root.getName() + "  has  " +
+    			       root.getElementCount() + "; " + evt.getLength());
+    	    System.out.println(discoverChildren(root));
+    	    
+    	}
 
-	public String discoverChildren(Element e) {
-	    String str = "" + e.getName() + e.getElementCount();
-	    if(e.getElementCount() > 0) {
-		str += " {";
-		for(int i = 0; i < e.getElementCount(); i++) {
-		    str += discoverChildren(e.getElement(i)) + ", ";
-		}
-		str += "}";
-	    }
-	    return str;
-	}
+    	public String discoverChildren(Element e) {
+    	    String str = "" + e.getName() + e.getElementCount();
+    	    if(e.getElementCount() > 0) {
+        	    str += " {";
+        	    for(int i = 0; i < e.getElementCount(); i++) {
+        		    str += discoverChildren(e.getElement(i)) + ", ";
+        		}
+        		str += "}";
+    	    }
+    	    return str;
+    	}
 
-	public void removeUpdate(DocumentEvent evt) {
-	}
+    	public void removeUpdate(DocumentEvent evt) {
 
-	public void changedUpdate(DocumentEvent evt) {
-	    System.out.println(evt.getLength());
-	}
+    	}
+
+    	public void changedUpdate(DocumentEvent evt) {
+    	    System.out.println(evt.getLength());
+    	}
     }
 }
