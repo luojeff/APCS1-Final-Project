@@ -10,6 +10,10 @@ Capabilities:
 <li>Keybinds</li>
 </ul>
 
+<p>
 Contributors:
+<br>
 Jeffrey Luo
+<br>
 Max Zlotskiy
+</p>
