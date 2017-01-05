@@ -20,7 +20,6 @@ public class TestFilter extends DocumentFilter {
 	    StyleConstants.setBold(attrs, false);
 	    StyleConstants.setForeground(attrs, Color.black);
             super.replace(fb, offset, length, str, attrs);
-	    
         }
 
 	/*
