@@ -124,95 +124,23 @@ public class Window extends JFrame implements ActionListener {
 	    }
 	    break;
 	case "OPEN":
-	    FileExplorer fe1 = new FileExplorer(true);
+	    FileExplorer fe1 = new FileExplorer(true, editField);
 	    fe1.revealExplorer();
 	    editField.setText(fe1.getContents());
 	    break;
 	case "SAVEAS":
-	    FileExplorer fe2 = new FileExplorer(false);
+	    FileExplorer fe2 = new FileExplorer(false, editField);
 	    fe2.revealExplorer();
 	    break;
+	case "SAVE":
+	    FileExplorer fe3 = new FileExplorer(false, editField);
+	    fe3.revealExplorer();
 	case "FONT":
 	    editField.changeFont("Arial", 16);
 	    editField.addFontStyle(true, true, "INSERT_STYLE");
 	    editField.insertAS();
 	    textPanel.revalidate();
 	    break;
-	}
-    }
-
-    /**
-     * Opens a file explorer which allows for the user to either choose a file
-     * and copy the contents into the text component or choose a directory to
-     * save a file into
-     */
-    public class FileExplorer {
-
-	private File file;
-	private String contents = "";
-	private Boolean read;
-
-	public FileExplorer(Boolean read) {
-	    this.read = read;
-	}
-
-	public void revealExplorer() {
-	    // JDialog.setDefaultLookAndFeelDecorated(false);
-	    JFileChooser fileChooser = new JFileChooser();
-	    if (read) {
-		int val = fileChooser.showOpenDialog(null);
-		if (val == JFileChooser.APPROVE_OPTION) {
-		    file = fileChooser.getSelectedFile();
-		    readFile(file);
-		}
-	    } else {
-		int val = fileChooser.showSaveDialog(null);
-		if (val == JFileChooser.APPROVE_OPTION) {
-		    file = fileChooser.getSelectedFile();
-		    if (!file.exists()) {
-			writeFile(file, editField.getText());
-		    } else {
-			int response = JOptionPane.showConfirmDialog(null, "Do you want to overwrite an existing file?",
-								     "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-			if (response == JOptionPane.YES_OPTION) {
-			    writeFile(file, editField.getText());
-			}
-		    }
-		}
-	    }
-	}
-
-	public String getContents() {
-	    return contents;
-	}
-
-	public void readFile(File file) {
-	    try {
-		BufferedReader reader = new BufferedReader(new FileReader(file));
-		String line = reader.readLine();
-		while (line != null) {
-		    contents += line + '\n';
-		    line = reader.readLine();
-		}
-		reader.close();
-	    } catch (FileNotFoundException e) {
-		System.out.println("File not found!");
-	    } catch (IOException e) {
-		System.out.println("Error in parsing file!");
-	    }
-	}
-
-	public void writeFile(File newFile, String content) {
-	    try {
-		if (!newFile.exists()) {
-		    newFile.createNewFile();
-		}
-		BufferedWriter writer = new BufferedWriter(new FileWriter(newFile));
-		writer.write(content);
-		writer.close();
-	    } catch (IOException e) {
-		System.out.println("Error in parsing file!");
-	    }
 	}
     }
 }
