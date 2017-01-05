@@ -128,11 +128,11 @@ public class EditorArea extends JPanel {
     private static class TestListener implements DocumentListener {
 	public void insertUpdate(DocumentEvent evt) {
 	    System.out.print(evt.getType().toString() + " " + evt.getLength()
-			     + "; "); Element root =
-					  evt.getDocument().getDefaultRootElement();
+			     + "; "); 
+	    Element root = evt.getDocument().getDefaultRootElement();
 	    System.out.println(root.getName() + "  has  " +
-			       root.getElementCount());
-	    System.out.println(evt.getLength());
+			       root.getElementCount() + "; " + evt.getLength());
+	    
 	}
 
 	public void removeUpdate(DocumentEvent evt) {
