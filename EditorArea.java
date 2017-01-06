@@ -127,13 +127,7 @@ public class EditorArea extends JPanel {
 	
     private static class TestListener implements DocumentListener {
     	public void insertUpdate(DocumentEvent evt) {
-    	    System.out.print(evt.getType().toString() + " " + evt.getLength()
-    			     + "; "); 
-    	    Element root = evt.getDocument().getDefaultRootElement();
-    	    System.out.println(root.getName() + "  has  " +
-    			       root.getElementCount() + "; " + evt.getLength());
-    	    System.out.println(discoverChildren(root));
-    	    
+    	   displayInfo(evt);
     	}
 
     	public String discoverChildren(Element e) {
@@ -149,11 +143,16 @@ public class EditorArea extends JPanel {
     	}
 
     	public void removeUpdate(DocumentEvent evt) {
-
+            displayInfo(evt);
     	}
 
     	public void changedUpdate(DocumentEvent evt) {
-    	    System.out.println(evt.getLength());
+    	    displayInfo(evt);
     	}
+
+        public void displayInfo(DocumentEvent evt) {
+            Element root = evt.getDocument().getDefaultRootElement();
+            System.out.println(evt.getType().toString() + " " + evt.getLength() + "; " + discoverChildren(root));
+        }
     }
 }
