@@ -127,11 +127,12 @@ public class EditorArea extends JPanel {
 	
     private static class TestListener implements DocumentListener {
     	public String discoverChildren(Element e) {
-    	    String str = "" + e.getName() + e.getElementCount();
+            //((AbstractDocument.AbstractElement)e).dump(System.out, 2);
+    	    String str = "" + e.getName() + "(" + e.getElementCount() + "|" + e.getStartOffset() + ":" + e.getEndOffset() + ")";
     	    if(e.getElementCount() > 0) {
         	    str += " {";
         	    for(int i = 0; i < e.getElementCount(); i++) {
-        		    str += discoverChildren(e.getElement(i)) + ", ";
+        		    str += discoverChildren(e.getElement(i)) + ((i + 1 == e.getElementCount())?  "" : ", ");
         		}
         		str += "}";
     	    }
