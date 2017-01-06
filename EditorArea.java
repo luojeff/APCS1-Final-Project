@@ -126,10 +126,6 @@ public class EditorArea extends JPanel {
 
 	
     private static class TestListener implements DocumentListener {
-    	public void insertUpdate(DocumentEvent evt) {
-    	   displayInfo(evt);
-    	}
-
     	public String discoverChildren(Element e) {
     	    String str = "" + e.getName() + e.getElementCount();
     	    if(e.getElementCount() > 0) {
@@ -141,6 +137,10 @@ public class EditorArea extends JPanel {
     	    }
     	    return str;
     	}
+
+        public void insertUpdate(DocumentEvent evt) {
+           displayInfo(evt);
+        }
 
     	public void removeUpdate(DocumentEvent evt) {
             displayInfo(evt);
