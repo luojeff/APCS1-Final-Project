@@ -10,6 +10,7 @@ public class Window extends JFrame implements ActionListener {
     private JLabel label;
     private JMenuBar menuBar;
     private JMenu menu1, menu2, menu3, menu4;
+    private JMenu submenu1, submenu2;
     private JScrollPane scroll;
     private EditorArea editField;
     private Container pane;
@@ -39,14 +40,20 @@ public class Window extends JFrame implements ActionListener {
 	// Creates a menubar on the top which can contain the common
 	// functions of most editors (File, Edit, Options, Help, etc...)
 	menuBar = new JMenuBar();
+
+	// Submenus in menubar
 	menu1 = new JMenu("File");
 	menu2 = new JMenu("Edit");
 	menu4 = new JMenu("Properties");
 	menu3 = new JMenu("Help");
+	submenu1 = new JMenu("Change Font");
+	submenu2 = new JMenu("Change Font Size");
 	menuBar.add(menu1);
 	menuBar.add(menu2);
 	menuBar.add(menu4);
 	menuBar.add(menu3);
+	menu4.add(submenu1);
+	menu4.add(submenu2);
 	
 	/*
 	 * ArrayList<JMenuItem> menu1list = new ArrayList<JMenuItem>();
@@ -54,6 +61,7 @@ public class Window extends JFrame implements ActionListener {
 	 * ArrayList<JMenuItem> menu3list = new ArrayList<JMenuItem>();
 	 */
 
+	// Items in submenu
 	JMenuItem m1i1 = new JMenuItem("Open");
 	JMenuItem m1i2 = new JMenuItem("Save");
 	JMenuItem m1i3 = new JMenuItem("Save As");
@@ -61,7 +69,13 @@ public class Window extends JFrame implements ActionListener {
 	JMenuItem m2i1 = new JMenuItem("Copy All");
 	JMenuItem m2i2 = new JMenuItem("Paste");
 	JMenuItem m3i1 = new JMenuItem("About");
-	JMenuItem m4i1 = new JMenuItem("Appearance");
+
+	// Font selections for submenu
+	JMenuItem m4s1i1 = new JMenuItem("Consolas");
+
+	// Font sizes for submenu
+	JMenuItem m4s2i1 = new JMenuItem("12");
+	JMenuItem m4s2i2 = new JMenuItem("18");
 	
 	menu1.add(m1i1);
 	menu1.add(m1i2);
@@ -70,7 +84,9 @@ public class Window extends JFrame implements ActionListener {
 	menu2.add(m2i1);
 	menu2.add(m2i2);
 	menu3.add(m3i1);
-	menu4.add(m4i1);
+	submenu1.add(m4s1i1);
+	submenu2.add(m4s2i1);
+	submenu2.add(m4s2i2);
 
 	m1i1.addActionListener(this);
 	m1i2.addActionListener(this);
@@ -79,8 +95,9 @@ public class Window extends JFrame implements ActionListener {
 	m2i1.addActionListener(this);
 	m2i2.addActionListener(this);
 	m3i1.addActionListener(this);
-	m4i1.addActionListener(this);
-
+	m4s1i1.addActionListener(this);
+	m4s2i1.addActionListener(this);
+	
 	m1i1.setActionCommand("OPEN");
 	m1i2.setActionCommand("SAVE");
 	m1i3.setActionCommand("SAVEAS");
@@ -88,8 +105,9 @@ public class Window extends JFrame implements ActionListener {
 	m2i1.setActionCommand("COPY");
 	m2i2.setActionCommand("PASTE");
 	m3i1.setActionCommand("ABOUT");
-	m4i1.setActionCommand("FONT");
-
+	m4s1i1.setActionCommand("FONT");
+	m4s2i1.setActionCommand("OTHER");
+	
 	editField = new EditorArea();
 	label = new JLabel("Save as: ");
 	label.setVisible(false);
@@ -138,8 +156,7 @@ public class Window extends JFrame implements ActionListener {
 	case "FONT":
 	    editField.changeFont("Arial", 16);
 	    editField.addFontStyle(true, true, "INSERT_STYLE");
-	    editField.insertAS();
-	    textPanel.revalidate();
+	    editField.revalidate();
 	    break;
 	}
     }

@@ -86,6 +86,7 @@ public class EditorArea extends JPanel {
     public void addFontStyle(Boolean italics, Boolean bold, String style){
         attrs.addAttribute(StyleConstants.CharacterConstants.Italic, Boolean.TRUE);
 	attrs.addAttribute(StyleConstants.CharacterConstants.Foreground, Color.green);
+	this.revalidate();
     }
     
     /**

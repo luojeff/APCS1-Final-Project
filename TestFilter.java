@@ -18,7 +18,7 @@ public class TestFilter extends DocumentFilter {
             super.replace(fb, offset, length, str, attrs);
         } else {
 	    StyleConstants.setBold(attrs, false);
-	    StyleConstants.setForeground(attrs, Color.black);
+	    StyleConstants.setForeground(attrs, Color.green);
             super.replace(fb, offset, length, str, attrs);
         }
 
