@@ -1,3 +1,6 @@
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;
@@ -14,15 +17,18 @@ public class EditorArea extends JPanel {
     private StyledDocument doc;
     private SimpleAttributeSet attrs;
     private Font font;
+    private int fontSize;
     private TestFilter tf;
 
     public EditorArea() {
 	super(new BorderLayout());
 
 	doc = new DefaultStyledDocument();
-	ePane = new JTextPane(doc);
-	font = new Font("Consolas", Font.PLAIN, 18);
+	ePane = new JTextPane(doc);	
 	tf = new TestFilter();
+
+	fontSize = 18;
+	font = new Font("Consolas", Font.PLAIN, fontSize);
 	ePane.setFont(font);
 
 	/* - - - - - KEYBIND INPUT/ACTION(MAP) FORMAT - - - - -
@@ -54,14 +60,6 @@ public class EditorArea extends JPanel {
     public String getText() {
 	return ePane.getText();
     }
-
-    public void insertAS(){
-	try {
-	    doc.insertString(1, "Something", attrs);
-	} catch(BadLocationException e){
-	    e.printStackTrace();
-	}
-    }
 	
     public JTextPane getEditor(){
 	return ePane;
@@ -76,13 +74,26 @@ public class EditorArea extends JPanel {
     }
 
     public void changeFont(String fontname, int size){
-	font = new Font(fontname, Font.PLAIN, size);
-	ePane.revalidate();
+	fontSize = size;
+	font = new Font(fontname, Font.PLAIN, fontSize);
+	ePane.setFont(font);
+    }
+
+    public int getFontSize(){
+	return fontSize;
+    }
+
+    public String getCurrentFont(){
+	return font.getFontName();
     }
 
     public void addFontStyle(Boolean italics, Boolean bold, String style){
-        attrs.addAttribute(StyleConstants.CharacterConstants.Italic, Boolean.TRUE);
-	attrs.addAttribute(StyleConstants.CharacterConstants.Foreground, Color.green);
+	if (italics) {
+	    attrs.addAttribute(StyleConstants.CharacterConstants.Italic, Boolean.TRUE);
+	}
+	if (bold) {
+	    attrs.addAttribute(StyleConstants.CharacterConstants.Bold, Boolean.TRUE);
+	}
     }
     
     /**
@@ -125,11 +136,11 @@ public class EditorArea extends JPanel {
     private static class TestListener implements DocumentListener {
 	public void insertUpdate(DocumentEvent evt) {
 	    System.out.print(evt.getType().toString() + " " + evt.getLength()
-			     + "; "); Element root =
-					  evt.getDocument().getDefaultRootElement();
+			     + "; "); 
+	    Element root = evt.getDocument().getDefaultRootElement();
 	    System.out.println(root.getName() + "  has  " +
-			       root.getElementCount());
-	    System.out.println(evt.getLength());
+			       root.getElementCount() + "; " + evt.getLength());
+	    
 	}
 
 	public void removeUpdate(DocumentEvent evt) {

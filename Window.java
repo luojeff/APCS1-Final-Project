@@ -10,6 +10,7 @@ public class Window extends JFrame implements ActionListener {
     private JLabel label;
     private JMenuBar menuBar;
     private JMenu menu1, menu2, menu3, menu4;
+    private JMenu submenu1, submenu2;
     private JScrollPane scroll;
     private EditorArea editField;
     private Container pane;
@@ -39,14 +40,20 @@ public class Window extends JFrame implements ActionListener {
 	// Creates a menubar on the top which can contain the common
 	// functions of most editors (File, Edit, Options, Help, etc...)
 	menuBar = new JMenuBar();
+
+	// Submenus in menubar
 	menu1 = new JMenu("File");
 	menu2 = new JMenu("Edit");
 	menu4 = new JMenu("Properties");
 	menu3 = new JMenu("Help");
+	submenu1 = new JMenu("Change Font");
+	submenu2 = new JMenu("Change Font Size");
 	menuBar.add(menu1);
 	menuBar.add(menu2);
 	menuBar.add(menu4);
 	menuBar.add(menu3);
+	menu4.add(submenu1);
+	menu4.add(submenu2);
 	
 	/*
 	 * ArrayList<JMenuItem> menu1list = new ArrayList<JMenuItem>();
@@ -54,6 +61,7 @@ public class Window extends JFrame implements ActionListener {
 	 * ArrayList<JMenuItem> menu3list = new ArrayList<JMenuItem>();
 	 */
 
+	// Items in submenu
 	JMenuItem m1i1 = new JMenuItem("Open");
 	JMenuItem m1i2 = new JMenuItem("Save");
 	JMenuItem m1i3 = new JMenuItem("Save As");
@@ -61,7 +69,15 @@ public class Window extends JFrame implements ActionListener {
 	JMenuItem m2i1 = new JMenuItem("Copy All");
 	JMenuItem m2i2 = new JMenuItem("Paste");
 	JMenuItem m3i1 = new JMenuItem("About");
-	JMenuItem m4i1 = new JMenuItem("Appearance");
+
+	// Font selections for submenu
+	JMenuItem m4s1i1 = new JMenuItem("Monospaced");
+	JMenuItem m4s1i2 = new JMenuItem("Consolas");
+	JMenuItem m4s1i3 = new JMenuItem("Arial");
+
+	// Font sizes for submenu
+	JMenuItem m4s2i1 = new JMenuItem("12");
+	JMenuItem m4s2i2 = new JMenuItem("18");
 	
 	menu1.add(m1i1);
 	menu1.add(m1i2);
@@ -70,7 +86,11 @@ public class Window extends JFrame implements ActionListener {
 	menu2.add(m2i1);
 	menu2.add(m2i2);
 	menu3.add(m3i1);
-	menu4.add(m4i1);
+	submenu1.add(m4s1i1);
+	submenu1.add(m4s1i2);
+	submenu1.add(m4s1i3);
+	submenu2.add(m4s2i1);
+	submenu2.add(m4s2i2);
 
 	m1i1.addActionListener(this);
 	m1i2.addActionListener(this);
@@ -79,8 +99,12 @@ public class Window extends JFrame implements ActionListener {
 	m2i1.addActionListener(this);
 	m2i2.addActionListener(this);
 	m3i1.addActionListener(this);
-	m4i1.addActionListener(this);
-
+	m4s1i1.addActionListener(this);
+	m4s1i2.addActionListener(this);
+	m4s1i3.addActionListener(this);
+	m4s2i1.addActionListener(this);
+	m4s2i2.addActionListener(this);
+	
 	m1i1.setActionCommand("OPEN");
 	m1i2.setActionCommand("SAVE");
 	m1i3.setActionCommand("SAVEAS");
@@ -88,8 +112,10 @@ public class Window extends JFrame implements ActionListener {
 	m2i1.setActionCommand("COPY");
 	m2i2.setActionCommand("PASTE");
 	m3i1.setActionCommand("ABOUT");
-	m4i1.setActionCommand("FONT");
-
+	m4s1i1.setActionCommand("FONT-MONO");
+	m4s1i2.setActionCommand("FONT-CONSOLAS");
+	m4s1i3.setActionCommand("FONT-ARIAL");
+	
 	editField = new EditorArea();
 	label = new JLabel("Save as: ");
 	label.setVisible(false);
@@ -124,95 +150,33 @@ public class Window extends JFrame implements ActionListener {
 	    }
 	    break;
 	case "OPEN":
-	    FileExplorer fe1 = new FileExplorer(true);
+	    FileExplorer fe1 = new FileExplorer(true, editField);
 	    fe1.revealExplorer();
 	    editField.setText(fe1.getContents());
 	    break;
 	case "SAVEAS":
-	    FileExplorer fe2 = new FileExplorer(false);
+	    FileExplorer fe2 = new FileExplorer(false, editField);
 	    fe2.revealExplorer();
 	    break;
-	case "FONT":
-	    editField.changeFont("Arial", 16);
-	    editField.addFontStyle(true, true, "INSERT_STYLE");
-	    editField.insertAS();
-	    textPanel.revalidate();
+	case "SAVE":
+	    FileExplorer fe3 = new FileExplorer(false, editField);
+	    fe3.revealExplorer();
+	case "FONT-MONO":
+	    editField.changeFont("Monospaced", editField.getFontSize());
+	    //editField.addFontStyle(true, true, "INSERT_STYLE");
 	    break;
-	}
-    }
-
-    /**
-     * Opens a file explorer which allows for the user to either choose a file
-     * and copy the contents into the text component or choose a directory to
-     * save a file into
-     */
-    public class FileExplorer {
-
-	private File file;
-	private String contents = "";
-	private Boolean read;
-
-	public FileExplorer(Boolean read) {
-	    this.read = read;
-	}
-
-	public void revealExplorer() {
-	    // JDialog.setDefaultLookAndFeelDecorated(false);
-	    JFileChooser fileChooser = new JFileChooser();
-	    if (read) {
-		int val = fileChooser.showOpenDialog(null);
-		if (val == JFileChooser.APPROVE_OPTION) {
-		    file = fileChooser.getSelectedFile();
-		    readFile(file);
-		}
-	    } else {
-		int val = fileChooser.showSaveDialog(null);
-		if (val == JFileChooser.APPROVE_OPTION) {
-		    file = fileChooser.getSelectedFile();
-		    if (!file.exists()) {
-			writeFile(file, editField.getText());
-		    } else {
-			int response = JOptionPane.showConfirmDialog(null, "Do you want to overwrite an existing file?",
-								     "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-			if (response == JOptionPane.YES_OPTION) {
-			    writeFile(file, editField.getText());
-			}
-		    }
-		}
-	    }
-	}
-
-	public String getContents() {
-	    return contents;
-	}
-
-	public void readFile(File file) {
-	    try {
-		BufferedReader reader = new BufferedReader(new FileReader(file));
-		String line = reader.readLine();
-		while (line != null) {
-		    contents += line + '\n';
-		    line = reader.readLine();
-		}
-		reader.close();
-	    } catch (FileNotFoundException e) {
-		System.out.println("File not found!");
-	    } catch (IOException e) {
-		System.out.println("Error in parsing file!");
-	    }
-	}
-
-	public void writeFile(File newFile, String content) {
-	    try {
-		if (!newFile.exists()) {
-		    newFile.createNewFile();
-		}
-		BufferedWriter writer = new BufferedWriter(new FileWriter(newFile));
-		writer.write(content);
-		writer.close();
-	    } catch (IOException e) {
-		System.out.println("Error in parsing file!");
-	    }
+	case "FONT-CONSOLAS":
+	    editField.changeFont("Consolas", editField.getFontSize());
+	    break;
+	case "FONT-ARIAL":
+	    editField.changeFont("Arial", editField.getFontSize());
+	    break;
+	case "12":
+	    editField.changeFont(editField.getCurrentFont(), 12);
+	    break;
+	case "18":
+	    editField.changeFont(editField.getCurrentFont(), 18);
+	    break;
 	}
     }
 }

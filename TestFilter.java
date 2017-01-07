@@ -10,8 +10,6 @@ public class TestFilter extends DocumentFilter {
         System.out.println("invoked");
 	SimpleAttributeSet attrs = new SimpleAttributeSet(attr);
 
-	String keyWord = "class";
-	
         if(offset % 2 == 0) {
             StyleConstants.setBold(attrs, true);
 	    StyleConstants.setForeground(attrs, Color.red);
@@ -21,14 +19,5 @@ public class TestFilter extends DocumentFilter {
 	    StyleConstants.setForeground(attrs, Color.black);
             super.replace(fb, offset, length, str, attrs);
         }
-
-	/*
-
-	int ind = EditorArea.getEditor().indexOf(keyWord);
-	if(ind != 0){
-	    StyleConstants.setBold(bold, true);
-	    super.replace(fb, ind, keyWord.length(), keyWord, bold);
-	}
-	*/
     }
 }
