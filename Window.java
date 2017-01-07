@@ -71,7 +71,9 @@ public class Window extends JFrame implements ActionListener {
 	JMenuItem m3i1 = new JMenuItem("About");
 
 	// Font selections for submenu
-	JMenuItem m4s1i1 = new JMenuItem("Consolas");
+	JMenuItem m4s1i1 = new JMenuItem("Monospaced");
+	JMenuItem m4s1i2 = new JMenuItem("Consolas");
+	JMenuItem m4s1i3 = new JMenuItem("Arial");
 
 	// Font sizes for submenu
 	JMenuItem m4s2i1 = new JMenuItem("12");
@@ -85,6 +87,8 @@ public class Window extends JFrame implements ActionListener {
 	menu2.add(m2i2);
 	menu3.add(m3i1);
 	submenu1.add(m4s1i1);
+	submenu1.add(m4s1i2);
+	submenu1.add(m4s1i3);
 	submenu2.add(m4s2i1);
 	submenu2.add(m4s2i2);
 
@@ -96,7 +100,10 @@ public class Window extends JFrame implements ActionListener {
 	m2i2.addActionListener(this);
 	m3i1.addActionListener(this);
 	m4s1i1.addActionListener(this);
+	m4s1i2.addActionListener(this);
+	m4s1i3.addActionListener(this);
 	m4s2i1.addActionListener(this);
+	m4s2i2.addActionListener(this);
 	
 	m1i1.setActionCommand("OPEN");
 	m1i2.setActionCommand("SAVE");
@@ -105,8 +112,11 @@ public class Window extends JFrame implements ActionListener {
 	m2i1.setActionCommand("COPY");
 	m2i2.setActionCommand("PASTE");
 	m3i1.setActionCommand("ABOUT");
-	m4s1i1.setActionCommand("FONT");
-	m4s2i1.setActionCommand("OTHER");
+	m4s1i1.setActionCommand("FONT-MONO");
+	m4s1i2.setActionCommand("FONT-CONSOLAS");
+	m4s1i3.setActionCommand("FONT-ARIAL");
+	m4s2i1.setActionCommand("12");
+	m4s2i2.setActionCommand("18");
 	
 	editField = new EditorArea();
 	label = new JLabel("Save as: ");
@@ -153,10 +163,21 @@ public class Window extends JFrame implements ActionListener {
 	case "SAVE":
 	    FileExplorer fe3 = new FileExplorer(false, editField);
 	    fe3.revealExplorer();
-	case "FONT":
-	    editField.changeFont("Arial", 16);
-	    editField.addFontStyle(true, true, "INSERT_STYLE");
-	    editField.revalidate();
+	case "FONT-MONO":
+	    editField.changeFont("Monospaced", editField.getFontSize());
+	    //editField.addFontStyle(true, true, "INSERT_STYLE");
+	    break;
+	case "FONT-CONSOLAS":
+	    editField.changeFont("Consolas", editField.getFontSize());
+	    break;
+	case "FONT-ARIAL":
+	    editField.changeFont("Arial", editField.getFontSize());
+	    break;
+	case "12":
+	    editField.changeFont(editField.getCurrentFont(), 12);
+	    break;
+	case "18":
+	    editField.changeFont(editField.getCurrentFont(), 18);
 	    break;
 	}
     }
