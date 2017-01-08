@@ -76,7 +76,10 @@ public class TestFilter extends DocumentFilter {
             case "":
                 StyleConstants.setForeground(style, Color.black);
             break;
-            case "tag":
+            case "tag-start":
+                StyleConstants.setForeground(style, Color.blue);
+                break;
+            case "tag-name":
                 StyleConstants.setForeground(style, Color.blue);
                 break;
             case "attribute-name":
@@ -90,6 +93,9 @@ public class TestFilter extends DocumentFilter {
                 break;
             case "attribute-value-quoted":
                 StyleConstants.setForeground(style, new Color(27, 127, 209));
+                break;
+            case "html-comment":
+                StyleConstants.setForeground(style, new Color(100, 100, 100));
                 break;
             case "tag-end":
                 StyleConstants.setForeground(style, Color.blue);
@@ -141,12 +147,25 @@ public class TestFilter extends DocumentFilter {
     */
     public String determineState(String previous, char c) {
         if(previous.equals("")) {
-            if(c == '<') {return "tag";}
+            if(c == '<') {return "tag-start";}
         }
-        if(previous.equals("tag")) {
+        if(previous.equals("tag-start")) {
             if(c == '>') {return "tag-end";}
-            else if(Character.isWhitespace(c)) {return "attribute-name";}
-            else {return "tag";}
+            else if(c == '!') {return "tag-special";}
+            else if(Character.isWhitespace(c)) {return "tag-start";}
+            else {return "tag-name";}
+        }
+        if(previous.equals("tag-special")) {
+            if(c == '-') {return "tag-special-comment-partial";}
+            return "tag-name";
+        }
+        if(previous.equals("tag-special-comment-partial")) {
+            if(c == '-') {return "html-comment";}
+            return "tag-name";
+        }
+        if(previous.equals("tag-name")) {
+            if(Character.isWhitespace(c)) {return "attribute-name";}
+            else {return "tag-name";}
         }
         if(previous.equals("attribute-name")) {
             if(c == '>') {return "tag-end";}
@@ -169,7 +188,19 @@ public class TestFilter extends DocumentFilter {
             return "attribute-value-quoted";
         }
         if(previous.equals("tag-end")) {
-            if(c == '<') {return "tag";}
+            if(c == '<') {return "tag-start";}
+        }
+        if(previous.equals("html-comment")) {
+            if(c == '-') {return "html-comment-1";}
+            return "html-comment";
+        }
+        if(previous.equals("html-comment-1")) {
+            if(c == '-') {return "html-comment-2";}
+            return "html-comment";
+        }
+        if(previous.equals("html-comment-2")) {
+            if(c == '>') {return "tag-end";}
+            return "html-comment";
         }
         return "";
     }
