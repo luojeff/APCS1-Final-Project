@@ -14,10 +14,10 @@ public class TestFilter extends DocumentFilter {
 	    SimpleAttributeSet attrs = new SimpleAttributeSet(attr);
         DefaultStyledDocument doc = (DefaultStyledDocument)fb.getDocument();
         Element context = doc.getCharacterElement(offset);
-        parseInsertion(getContext(attr), str);
-	    attrs.removeAttribute(AbstractDocument.ElementNameAttribute);
+        replaceAll(fb, offset, length, parseInsertion(getContext(attr), str), attr);
+	    /*attrs.removeAttribute(AbstractDocument.ElementNameAttribute);
 	    attrs.addAttribute(AbstractDocument.ElementNameAttribute, "customName");
-	    super.replace(fb, offset, length, str, attrs);
+	    super.replace(fb, offset, length, str, attrs);*/
         /*if(offset % 2 == 0) {
             StyleConstants.setBold(attrs, true);
 	    StyleConstants.setForeground(attrs, Color.red);
@@ -41,12 +41,24 @@ public class TestFilter extends DocumentFilter {
         return "";
     }
 
+    public void replaceAll(FilterBypass fb, int offset, int length, String[][] pieces, AttributeSet set) throws BadLocationException {
+        for(String[] piece : pieces) {
+            super.replace(fb, offset, length, piece[1], getStyle(piece[0], set));
+        }
+    }
+
+    public AttributeSet getStyle(String context, AttributeSet parent) {
+        return parent;
+    }
+
     public String[][] parseInsertion(String context, String insertion) {
         ArrayList<String[]> pieces = new ArrayList<String[]>();
         int i = 0;
         while(i < insertion.length()) {
             i++;
         }
+        String[] s = {"", insertion};
+        pieces.add(s);
         return pieces.toArray(new String[0][]);
     }
 
