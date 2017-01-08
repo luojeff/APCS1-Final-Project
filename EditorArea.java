@@ -127,20 +127,34 @@ public class EditorArea extends JPanel {
 
 	
     private static class TestListener implements DocumentListener {
-	public void insertUpdate(DocumentEvent evt) {
-	    System.out.print(evt.getType().toString() + " " + evt.getLength()
-			     + "; "); 
-	    Element root = evt.getDocument().getDefaultRootElement();
-	    System.out.println(root.getName() + "  has  " +
-			       root.getElementCount() + "; " + evt.getLength());
-	    
-	}
+    	public String discoverChildren(Element e) {
+            //((AbstractDocument.AbstractElement)e).dump(System.out, 2);
+    	    String str = "" + e.getName() + "(" + e.getElementCount() + "|" + e.getStartOffset() + ":" + e.getEndOffset() + ")";
+    	    if(e.getElementCount() > 0) {
+        	    str += " {";
+        	    for(int i = 0; i < e.getElementCount(); i++) {
+        		    str += discoverChildren(e.getElement(i)) + ((i + 1 == e.getElementCount())?  "" : ", ");
+        		}
+        		str += "}";
+    	    }
+    	    return str;
+    	}
 
-	public void removeUpdate(DocumentEvent evt) {
-	}
+        public void insertUpdate(DocumentEvent evt) {
+           displayInfo(evt);
+        }
 
-	public void changedUpdate(DocumentEvent evt) {
-	    System.out.println(evt.getLength());
-	}
+    	public void removeUpdate(DocumentEvent evt) {
+            displayInfo(evt);
+    	}
+
+    	public void changedUpdate(DocumentEvent evt) {
+    	    displayInfo(evt);
+    	}
+
+        public void displayInfo(DocumentEvent evt) {
+            Element root = evt.getDocument().getDefaultRootElement();
+            System.out.println(evt.getType().toString() + " " + evt.getLength() + "; " + discoverChildren(root));
+        }
     }
 }
