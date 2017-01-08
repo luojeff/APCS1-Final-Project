@@ -68,12 +68,17 @@ public class TestFilter extends DocumentFilter {
             case "attribute-name":
                 StyleConstants.setForeground(style, Color.magenta);
                 break;
+            case "attribute-separator":
+                StyleConstants.setForeground(style, new Color(144, 19, 156));
+                break;
             case "attribute-value":
-                StyleConstants.setForeground(style, Color.cyan);
+                StyleConstants.setForeground(style, new Color(27, 127, 209));
                 break;
             case "attribute-value-quoted":
-                StyleConstants.setForeground(style, Color.cyan);
+                StyleConstants.setForeground(style, new Color(27, 127, 209));
                 break;
+            case "tag-end":
+                StyleConstants.setForeground(style, Color.blue);
         }
         return style;
     }
@@ -112,13 +117,18 @@ public class TestFilter extends DocumentFilter {
         }
         if(previous.equals("tag")) {
             if(c == '>') {return "tag-end";}
-            else if(c == ' ' || c == '\t' || c == '\n') {return "attribute-name";}
+            else if(Character.isWhitespace(c)) {return "attribute-name";}
             else {return "tag";}
         }
         if(previous.equals("attribute-name")) {
             if(c == '>') {return "tag-end";}
-            else if(c == '=') {return "attribute-value";}
+            else if(c == '=') {return "attribute-separator";}
             else {return "attribute-name";}
+        }
+        if(previous.equals("attribute-separator")) {
+            if(c == '>') {return "tag-end";}
+            if(c == '"') {return "attribute-value-quoted";}
+            return "attribute-value";
         }
         if(previous.equals("attribute-value")) {
             if(c == '"') {return "attribute-value-quoted";}
@@ -129,6 +139,9 @@ public class TestFilter extends DocumentFilter {
         if(previous.equals("attribute-value-quoted")) {
             if(c == '"') {return "attribute-value";}
             return "attribute-value-quoted";
+        }
+        if(previous.equals("tag-end")) {
+            if(c == '<') {return "tag";}
         }
         return "";
     }
