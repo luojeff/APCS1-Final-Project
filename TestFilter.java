@@ -48,18 +48,49 @@ public class TestFilter extends DocumentFilter {
     }
 
     public AttributeSet getStyle(String context, AttributeSet parent) {
-        return parent;
+        SimpleAttributeSet style = new SimpleAttributeSet(parent);
+        switch(context) {
+            case "":
+                StyleConstants.setForeground(style, Color.blue);
+        }
+        return style;
     }
 
     public String[][] parseInsertion(String context, String insertion) {
         ArrayList<String[]> pieces = new ArrayList<String[]>();
+        String previous = context, current = "", building = "";
         int i = 0;
         while(i < insertion.length()) {
+            current = determineState(previous, insertion.charAt(i));
+            if(previous.equals(current)) {
+                building += insertion.substring(i, i+1);
+            } else {
+                if(building.length() > 0) {
+                    String[] p = {current, building};
+                    pieces.add(p);
+                }
+                building = insertion.substring(i, i+1);
+                previous = current;
+            }
             i++;
         }
-        String[] s = {"", insertion};
-        pieces.add(s);
+        String[] p = {current, building};
+        pieces.add(p);
+        //String[] s = {"", insertion};
+        //pieces.add(s);
         return pieces.toArray(new String[0][]);
+    }
+
+    public String determineState(String previous, char c) {
+        if(previous.equals("")) {
+            if(c == '<') {return "tag";}
+        }
+        if(previous.equals("tag")) {
+            if(c == '>') {return "tag-end";}
+            else if(c == ' ' || c == '\t' || c == '\n') {return "attribute-name";}
+            else {return "tag";}
+        }
+        return "";
     }
 
     /*public void insertString(FilterBypass fb, int offset, String str, AttributeSet attr) throws BadLocationException {
