@@ -64,6 +64,16 @@ public class TestFilter extends DocumentFilter {
             break;
             case "tag":
                 StyleConstants.setForeground(style, Color.blue);
+                break;
+            case "attribute-name":
+                StyleConstants.setForeground(style, Color.magenta);
+                break;
+            case "attribute-value":
+                StyleConstants.setForeground(style, Color.cyan);
+                break;
+            case "attribute-value-quoted":
+                StyleConstants.setForeground(style, Color.cyan);
+                break;
         }
         return style;
     }
@@ -74,9 +84,9 @@ public class TestFilter extends DocumentFilter {
         int i = 0;
         while(i < insertion.length()) {
             current = determineState(previous, insertion.charAt(i));
-            System.out.print("  Determined '" + current + "' from '" + insertion.charAt(i) + "' in '" + previous + "'");
+            //System.out.print("  Determined '" + current + "' from '" + insertion.charAt(i) + "' in '" + previous + "'");
             if(previous.equals(current)) {
-                System.out.println(";  Continuing \"" + building + "\" in '" + current + "' with '" + insertion.charAt(i));
+                //System.out.println(";  Continuing \"" + building + "\" in '" + current + "' with '" + insertion.charAt(i));
                 building += insertion.substring(i, i+1);
             } else {
                 if(building.length() > 0) {
@@ -85,7 +95,7 @@ public class TestFilter extends DocumentFilter {
                 }
                 building = insertion.substring(i, i+1);
                 previous = current;
-                System.out.println(";  changed to state " + current);
+                //System.out.println(";  changed to state " + current);
             }
             i++;
         }
