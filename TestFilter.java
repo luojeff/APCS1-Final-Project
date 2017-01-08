@@ -3,6 +3,8 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class TestFilter extends DocumentFilter {
+    public static Object charState = new Object();
+
     public TestFilter() {
         super();
     }
@@ -12,6 +14,7 @@ public class TestFilter extends DocumentFilter {
 	    SimpleAttributeSet attrs = new SimpleAttributeSet(attr);
         DefaultStyledDocument doc = (DefaultStyledDocument)fb.getDocument();
         Element context = doc.getCharacterElement(offset);
+        parseInsertion(getContext(attr), str);
 	    attrs.removeAttribute(AbstractDocument.ElementNameAttribute);
 	    attrs.addAttribute(AbstractDocument.ElementNameAttribute, "customName");
 	    super.replace(fb, offset, length, str, attrs);
@@ -31,6 +34,11 @@ public class TestFilter extends DocumentFilter {
 	    super.replace(fb, ind, keyWord.length(), keyWord, bold);
 	}
 	*/
+    }
+
+    public String getContext(AttributeSet set) {
+        if(set.isDefined(charState)) {return (String)(set.getAttribute(charState));}
+        return "";
     }
 
     public String[][] parseInsertion(String context, String insertion) {
