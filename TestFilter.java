@@ -13,11 +13,11 @@ public class TestFilter extends DocumentFilter {
         System.out.println("invoked");
 	    SimpleAttributeSet attrs = new SimpleAttributeSet(attr);
         DefaultStyledDocument doc = (DefaultStyledDocument)fb.getDocument();
-        Element context = doc.getCharacterElement(offset);
-        replaceAll(fb, offset, length, parseInsertion(getContext(attr), str), attr);
-	    /*attrs.removeAttribute(AbstractDocument.ElementNameAttribute);
-	    attrs.addAttribute(AbstractDocument.ElementNameAttribute, "customName");
-	    super.replace(fb, offset, length, str, attrs);*/
+        Element context = doc.getCharacterElement((offset == 0)? offset : (offset - 1));
+        replaceAll(fb, offset, length, parseInsertion(getContext(context), str), attr);
+	    //attrs.removeAttribute(AbstractDocument.ElementNameAttribute);
+	    //attrs.addAttribute(AbstractDocument.ElementNameAttribute, "customName");
+	    //super.replace(fb, offset, length, str, attrs);
         /*if(offset % 2 == 0) {
             StyleConstants.setBold(attrs, true);
 	    StyleConstants.setForeground(attrs, Color.red);
@@ -41,9 +41,18 @@ public class TestFilter extends DocumentFilter {
         return "";
     }
 
+    public String getContext(Element elem) {
+        if(elem.getName().equals("content")) {return "";}
+        return elem.getName();
+    }
+
     public void replaceAll(FilterBypass fb, int offset, int length, String[][] pieces, AttributeSet set) throws BadLocationException {
         for(String[] piece : pieces) {
-            super.replace(fb, offset, length, piece[1], getStyle(piece[0], set));
+            SimpleAttributeSet named = new SimpleAttributeSet(set);
+            //System.out.println("Name of \"" + piece[1] + "\" is " + set.getAttribute(AbstractDocument.ElementNameAttribute));
+            named.removeAttribute(AbstractDocument.ElementNameAttribute);
+            named.addAttribute(AbstractDocument.ElementNameAttribute, piece[0]);
+            super.replace(fb, offset, length, piece[1], getStyle(piece[0], named));
         }
     }
 
@@ -51,6 +60,9 @@ public class TestFilter extends DocumentFilter {
         SimpleAttributeSet style = new SimpleAttributeSet(parent);
         switch(context) {
             case "":
+                StyleConstants.setForeground(style, Color.black);
+            break;
+            case "tag":
                 StyleConstants.setForeground(style, Color.blue);
         }
         return style;
@@ -62,7 +74,9 @@ public class TestFilter extends DocumentFilter {
         int i = 0;
         while(i < insertion.length()) {
             current = determineState(previous, insertion.charAt(i));
+            System.out.print("  Determined '" + current + "' from '" + insertion.charAt(i) + "' in '" + previous + "'");
             if(previous.equals(current)) {
+                System.out.println(";  Continuing \"" + building + "\" in '" + current + "' with '" + insertion.charAt(i));
                 building += insertion.substring(i, i+1);
             } else {
                 if(building.length() > 0) {
@@ -71,6 +85,7 @@ public class TestFilter extends DocumentFilter {
                 }
                 building = insertion.substring(i, i+1);
                 previous = current;
+                System.out.println(";  changed to state " + current);
             }
             i++;
         }
@@ -89,6 +104,21 @@ public class TestFilter extends DocumentFilter {
             if(c == '>') {return "tag-end";}
             else if(c == ' ' || c == '\t' || c == '\n') {return "attribute-name";}
             else {return "tag";}
+        }
+        if(previous.equals("attribute-name")) {
+            if(c == '>') {return "tag-end";}
+            else if(c == '=') {return "attribute-value";}
+            else {return "attribute-name";}
+        }
+        if(previous.equals("attribute-value")) {
+            if(c == '"') {return "attribute-value-quoted";}
+            if(c == '>') {return "tag-end";}
+            if(c == ' ') {return "attribute-name";}
+            return "attribute-value";
+        }
+        if(previous.equals("attribute-value-quoted")) {
+            if(c == '"') {return "attribute-value";}
+            return "attribute-value-quoted";
         }
         return "";
     }
