@@ -10,48 +10,76 @@ import javax.swing.text.JTextComponent;
  * file into
  */
 public class FileExplorer {
-
     private File file;
     private String contents = "";
-    private Boolean read;
+    private Boolean read, autoOverwrite;
     private EditorArea textField;
+    private String fileName;
+    JFileChooser fileChooser;
 
-    public FileExplorer(Boolean read, EditorArea textField) {
-	this.read = read;
+    public FileExplorer(EditorArea textField) {
 	this.textField = textField;
     }
 
     public void revealExplorer() {
-	// JDialog.setDefaultLookAndFeelDecorated(false);
-	JFileChooser fileChooser = new JFileChooser();
+	fileChooser = new JFileChooser();
 	if (read) {
 	    int val = fileChooser.showOpenDialog(null);
 	    if (val == JFileChooser.APPROVE_OPTION) {
-		file = fileChooser.getSelectedFile();
-		readFile(file);
+		readFile();
 	    }
 	} else {
 	    int val = fileChooser.showSaveDialog(null);
 	    if (val == JFileChooser.APPROVE_OPTION) {
-		file = fileChooser.getSelectedFile();
-		if (!file.exists()) {
-		    writeFile(file, textField.getText());
-		} else {
-		    int response = JOptionPane.showConfirmDialog(null, "Do you want to overwrite an existing file?",
-								 "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-		    if (response == JOptionPane.YES_OPTION) {
-			writeFile(file, textField.getText());
-		    }
+		writeFile();
+	    }
+	}
+    }
+
+    public void readFile(){
+	file = fileChooser.getSelectedFile();
+        readContents(file);
+	fileName = file.getAbsolutePath();
+    }
+
+    public void writeFile(){
+	if (autoOverwrite) {
+	    File current = new File(fileName);
+	    writeContents(current, textField.getText());
+	    fileName = file.getAbsolutePath();
+	} else {
+	    file = fileChooser.getSelectedFile();
+	    if (!file.exists()){
+		writeContents(file, textField.getText());
+		fileName = file.getAbsolutePath();
+	    } else {
+		int response = JOptionPane.showConfirmDialog(null, "Do you want to overwrite an existing file?",
+							     "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+		if (response == JOptionPane.YES_OPTION) {
+		    writeContents(file, textField.getText());
 		}
 	    }
 	}
+    }
+
+    public void setRead(boolean b){
+	read = b;
+    }
+
+    // True for Save, False for Save As
+    public void setAutoOverwrite(boolean b){
+	autoOverwrite = b;
     }
 
     public String getContents() {
 	return contents;
     }
 
-    public void readFile(File file) {
+    public String getFileName() {
+	return fileName;
+    }
+    
+    public void readContents(File file) {
 	try {
 	    BufferedReader reader = new BufferedReader(new FileReader(file));
 	    String line = reader.readLine();
@@ -67,7 +95,7 @@ public class FileExplorer {
 	}
     }
 
-    public void writeFile(File newFile, String content) {
+    public void writeContents(File newFile, String content) {
 	try {
 	    if (!newFile.exists()) {
 		newFile.createNewFile();

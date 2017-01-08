@@ -1,6 +1,3 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;
@@ -17,18 +14,20 @@ public class EditorArea extends JPanel {
     private StyledDocument doc;
     private SimpleAttributeSet attrs;
     private Font font;
-    private int fontSize;
+    private String fontName;
+    private int fontSize;  
     private TestFilter tf;
+    private StringBuilder textContents;
 
-    public EditorArea() {
+    public EditorArea(String fontName, int fontSize) {
 	super(new BorderLayout());
-
+	this.fontName = fontName;
+	this.fontSize = fontSize;
 	doc = new DefaultStyledDocument();
 	ePane = new JTextPane(doc);	
 	tf = new TestFilter();
-
-	fontSize = 18;
-	font = new Font("Consolas", Font.PLAIN, fontSize);
+        
+	font = new Font(fontName, Font.PLAIN, fontSize);
 	ePane.setFont(font);
 
 	/* - - - - - KEYBIND INPUT/ACTION(MAP) FORMAT - - - - -
@@ -47,8 +46,6 @@ public class EditorArea extends JPanel {
 	((AbstractDocument)doc).setDocumentFilter(tf);
 	
 	attrs = new SimpleAttributeSet();
-	//trs.addAttribute(StyleConstants.CharacterConstants.Italic, Boolean.TRUE);
-	//trs.addAttribute(StyleConstants.CharacterConstants.Foreground, Color.red);	
 		
 	// Tests
 	// System.out.println(JEditorPane.getEditorKitClassNameForContentType("x-code/html"));
@@ -59,10 +56,6 @@ public class EditorArea extends JPanel {
 
     public String getText() {
 	return ePane.getText();
-    }
-	
-    public JTextPane getEditor(){
-	return ePane;
     }
 
     public void setText(String contents) {
@@ -75,7 +68,7 @@ public class EditorArea extends JPanel {
 
     public void changeFont(String fontname, int size){
 	fontSize = size;
-	font = new Font(fontname, Font.PLAIN, fontSize);
+	font = new Font(fontname, Font.PLAIN, size);
 	ePane.setFont(font);
     }
 
