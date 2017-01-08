@@ -36,16 +36,26 @@ public class TestFilter extends DocumentFilter {
 	*/
     }
 
+    /**
+    * deprecated, here for legacy purposes. charState is no longer used.
+    */
     public String getContext(AttributeSet set) {
         if(set.isDefined(charState)) {return (String)(set.getAttribute(charState));}
         return "";
     }
 
+    /**
+    * converts the name of the element to a context name
+    */
     public String getContext(Element elem) {
         if(elem.getName().equals("content")) {return "";}
         return elem.getName();
     }
 
+    /**
+    * Inserts each "piece" of the 2d array individually, making a new element each time
+    * @param pieces A 2d string array in the format returned by parseInsertion
+    */
     public void replaceAll(FilterBypass fb, int offset, int length, String[][] pieces, AttributeSet set) throws BadLocationException {
         for(String[] piece : pieces) {
             SimpleAttributeSet named = new SimpleAttributeSet(set);
@@ -56,6 +66,10 @@ public class TestFilter extends DocumentFilter {
         }
     }
 
+    /**
+    * based on the context, returns and modifies
+    * an attributeset to have syntax highlighting.
+    */
     public AttributeSet getStyle(String context, AttributeSet parent) {
         SimpleAttributeSet style = new SimpleAttributeSet(parent);
         switch(context) {
@@ -83,6 +97,16 @@ public class TestFilter extends DocumentFilter {
         return style;
     }
 
+    /**
+    * Assigns contexts to the different structures within the string.
+    * Also goes through the string and breaks it up into syntax structures.
+    * @param context   the context that the insertion was inserted into
+    * @param insertion the string to parse
+    * @return a 2d string array where each String[] is of length two.
+    *         the first string is the context, and the second string
+    *         is the thing that context is describing. Example:<br>
+    *         <code>{context, string}</code>
+    */
     public String[][] parseInsertion(String context, String insertion) {
         ArrayList<String[]> pieces = new ArrayList<String[]>();
         String previous = context, current = "", building = "";
@@ -111,6 +135,10 @@ public class TestFilter extends DocumentFilter {
         return pieces.toArray(new String[0][]);
     }
 
+    /**
+    * determines the context that this character should have
+    * based on the context it was inserted into
+    */
     public String determineState(String previous, char c) {
         if(previous.equals("")) {
             if(c == '<') {return "tag";}
