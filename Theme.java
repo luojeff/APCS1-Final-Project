@@ -11,13 +11,54 @@ public class Theme {
         String[] lines = styles.split("\n");
         for(String l: lines) {
             String name = l.split(" ")[0];
-            String[] props = l.substring(l.indexOf(" ")).split(";");
+            String[] props = l.substring(l.indexOf(" ") + 1).split(";");
             definitions.put(name, new MyStyle(props));
         }
     }
 
+    /**
+     * Gets the style that covers this context/state. Include an
+     * asterik after dash to include all subcontexts of a context.
+     * If a style definition does not exist, goes to parent context
+     * and adds an asterik to see if that matches anything. If it
+     * still cant find anything, it will go to the parent again.
+     */
     public SimpleAttributeSet getStyle(String name) {
-        return null;
+        String search = name;
+	if(definitions.containsKey(search)) {
+	    return definitions.get(search).set;
+	}
+	String[] contexts = search.split("-");
+	contexts[contexts.length - 1] = "*";
+	search = join(contexts, "-");
+	while(search.length() > 0) {
+	    if(definitions.containsKey(search)) {
+		return definitions.get(search).set;
+	    } else {
+		contexts = search.split("-");
+		contexts = subarray(contexts, 0, contexts.length - 1);
+		contexts[contexts.length - 1] = "*";
+		search = join(contexts, "-");
+	    }
+	}
+	return new MyStyle(new String[] {"color 0 0 0"}).set;
+    }
+
+    private String join(String[] array, String glue) {
+	String str = "";
+	for(int i = 0; i < array.length; i++) {
+	    str += array[i];
+	    if(i != array.length - 1) {str += glue;}
+	}
+	return str;
+    }
+
+    private String[] subarray(String[] array, int begin, int end) {
+	String[] arr = new String[end - begin];
+	for(int i = begin; i < end; i++) {
+	    arr[i] = array[i];
+	}
+	return arr;
     }
 
     private class MyStyle {
