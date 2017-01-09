@@ -15,29 +15,30 @@ public class EditorArea extends JPanel {
     private SimpleAttributeSet attrs;
     private Font font;
     private String fontName;
-    private int fontSize;  
+    private int fontSize;
     private TestFilter tf;
     private StringBuilder textContents;
     private LinePanel lineNums;
-    
-    public EditorArea(String fontName, int fontSize, LinePanel lineNums) {
+
+    public EditorArea(String fontName, int fontSize) {
 	super(new BorderLayout());
 	this.fontName = fontName;
 	this.fontSize = fontSize;
 	this.lineNums = lineNums;
-	
+
 	doc = new DefaultStyledDocument();
-	ePane = new JTextPane(doc);	
+	ePane = new JTextPane(doc);
 	tf = new TestFilter();
-        
+
 	font = new Font(fontName, Font.PLAIN, fontSize);
 	ePane.setFont(font);
 
-	/* - - - - - KEYBIND INPUT/ACTION(MAP) FORMAT - - - - -
+	/*
+	 * - - - - - KEYBIND INPUT/ACTION(MAP) FORMAT - - - - -
 	 * ePane.getInputMap().put(KeyStroke.getKeyStroke("A"),"keyA");
-	 * ePane.getActionMap().put("keyA", new KeyAction("A"));
-	 * Registers the key "A" and advances to KeyAction class for action
-	 */ 
+	 * ePane.getActionMap().put("keyA", new KeyAction("A")); Registers the
+	 * key "A" and advances to KeyAction class for action
+	 */
 	ePane.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK), "keyCopy");
 	ePane.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_MASK), "emacs-up");
 	ePane.getActionMap().put("keyCopy", new KeyAction("copy"));
@@ -46,13 +47,13 @@ public class EditorArea extends JPanel {
 	this.add(ePane);
 
 	doc.addDocumentListener(new TestListener());
-	((AbstractDocument)doc).setDocumentFilter(tf);
-	
+	((AbstractDocument) doc).setDocumentFilter(tf);
+
 	attrs = new SimpleAttributeSet();
-		
+
 	// Tests
 	// System.out.println(JEditorPane.getEditorKitClassNameForContentType("x-code/html"));
-	
+
 	ePane.setCharacterAttributes(attrs, true);
 	ePane.revalidate();
     }
@@ -64,27 +65,31 @@ public class EditorArea extends JPanel {
     public void setText(String contents) {
 	ePane.setText(contents);
     }
+	
+    public void setLinePanel(LinePanel linePanel){
+	lineNums = linePanel;
+    }
 
     public void appendText(String contents) {
 	ePane.setText(ePane.getText() + contents);
     }
 
-    public void changeFont(String fontname, int size){
+    public void changeFont(String fontname, int size) {
 	fontSize = size;
 	font = new Font(fontname, Font.PLAIN, fontSize);
 	ePane.setFont(font);
 	lineNums.changeFont(fontname, fontSize);
     }
 
-    public int getFontSize(){
+    public int getFontSize() {
 	return fontSize;
     }
 
-    public String getCurrentFont(){
+    public String getCurrentFont() {
 	return font.getFontName();
     }
 
-    public void addFontStyle(Boolean italics, Boolean bold, String style){
+    public void addFontStyle(Boolean italics, Boolean bold, String style) {
 	if (italics) {
 	    attrs.addAttribute(StyleConstants.CharacterConstants.Italic, Boolean.TRUE);
 	}
@@ -92,7 +97,7 @@ public class EditorArea extends JPanel {
 	    attrs.addAttribute(StyleConstants.CharacterConstants.Bold, Boolean.TRUE);
 	}
     }
-    
+
     /**
      * Creates a hashmap where actions are stored by name and includes all the
      * supported ones from the textComponent
@@ -129,22 +134,24 @@ public class EditorArea extends JPanel {
 	}
     }
 
-	
-    private static class TestListener implements DocumentListener {
+    private class TestListener implements DocumentListener {
 	public void insertUpdate(DocumentEvent evt) {
-	    System.out.print(evt.getType().toString() + " " + evt.getLength()
-			     + "; "); 
-	    Element root = evt.getDocument().getDefaultRootElement();
-	    System.out.println(root.getName() + "  has  " +
-			       root.getElementCount() + "; " + evt.getLength());
-	    
+	    /*
+	     * System.out.print(evt.getType().toString() + " " + evt.getLength()
+	     * + "; "); Element root =
+	     * evt.getDocument().getDefaultRootElement();
+	     * System.out.println(root.getName() + "  has  " +
+	     * root.getElementCount() + "; " + evt.getLength());
+	     */
+
+	    lineNums.update();
 	}
 
 	public void removeUpdate(DocumentEvent evt) {
+	    lineNums.update();
 	}
 
 	public void changedUpdate(DocumentEvent evt) {
-	    System.out.println(evt.getLength());
 	}
     }
 }

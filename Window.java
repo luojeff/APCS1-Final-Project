@@ -13,9 +13,10 @@ public class Window extends JFrame implements ActionListener {
     private JMenuBar menuBar;
     private JMenu menu1, menu2, menu3, menu4;
     private JMenu submenu1, submenu2;
-    private JScrollPane scroll;
+    private JScrollPane scroll, scroll2;
     private EditorArea editField;
     private Container pane;
+    private Container editorContainer;
 
     /*
      * Sets up the main window with two panels. One panel contains the menu bar,
@@ -33,8 +34,6 @@ public class Window extends JFrame implements ActionListener {
 
 	menuPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	textPanel = new JPanel(new BorderLayout());
-	linePanel = new LinePanel();
-	textPanel.add(linePanel, BorderLayout.WEST);
 	mainPanel = new JPanel();
 
 	mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
@@ -141,19 +140,27 @@ public class Window extends JFrame implements ActionListener {
 	m4s2i5.setActionCommand("20");
 	m4s2i6.setActionCommand("22");
 	
-	editField = new EditorArea("Consolas", 18, linePanel);
+	editField = new EditorArea("Consolas", 18);
+	linePanel = new LinePanel(editField);
+	editField.setLinePanel(linePanel);
 	linePanel.changeFont(editField.getCurrentFont(), editField.getFontSize());
+	textPanel.add(linePanel, BorderLayout.WEST);
 	label = new JLabel("Save as: ");
 	label.setVisible(false);
 
 	menuPanel.add(menuBar);
 	menuPanel.add(label);
 
+	
 	scroll = new JScrollPane(editField);
 	scroll.getVerticalScrollBar().setUnitIncrement(18);
-	textPanel.add(scroll, BorderLayout.CENTER);
+        textPanel.add(scroll, BorderLayout.CENTER);
+	/*
+	scroll = new JScrollPane(linePanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	scroll2 = new JScrollPane(linePanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	scroll.getVerticalScrollBar().setModel(scroll2.getVerticalScrollBar().getModel());
+	*/
     }
-
     public void actionPerformed(ActionEvent e) {
 	Clipboard clipBoard = Toolkit.getDefaultToolkit().getSystemClipboard();
 	String event = e.getActionCommand();

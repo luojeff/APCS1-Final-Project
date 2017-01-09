@@ -7,7 +7,6 @@ public class TestFilter extends DocumentFilter {
     }
 
     public void replace(FilterBypass fb, int offset, int length, String str, AttributeSet attr) throws BadLocationException {
-        System.out.println("invoked");
 	SimpleAttributeSet attrs = new SimpleAttributeSet(attr);
 
         if(offset % 2 == 0) {
