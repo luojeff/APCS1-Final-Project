@@ -25,40 +25,40 @@ public class Theme {
      */
     public SimpleAttributeSet getStyle(String name) {
         String search = name;
-	if(definitions.containsKey(search)) {
-	    return definitions.get(search).set;
-	}
-	String[] contexts = search.split("-");
-	contexts[contexts.length - 1] = "*";
-	search = join(contexts, "-");
-	while(search.length() > 0) {
 	    if(definitions.containsKey(search)) {
-		return definitions.get(search).set;
-	    } else {
-		contexts = search.split("-");
-		contexts = subarray(contexts, 0, contexts.length - 1);
-		contexts[contexts.length - 1] = "*";
-		search = join(contexts, "-");
+	        return definitions.get(search).set;
 	    }
-	}
-	return new MyStyle(new String[] {"color 0 0 0"}).set;
+    	String[] contexts = search.split("-");
+    	contexts[contexts.length - 1] = "*";
+    	search = join(contexts, "-");
+    	while(search.length() > 0) {
+    	    if(definitions.containsKey(search)) {
+    		    return definitions.get(search).set;
+    	    } else {
+    		    contexts = search.split("-");
+    		    contexts = subarray(contexts, 0, contexts.length - 1);
+    		    contexts[contexts.length - 1] = "*";
+    		    search = join(contexts, "-");
+    	    }
+    	}
+    	return new MyStyle(new String[] {"color 0 0 0"}).set;
     }
 
     private String join(String[] array, String glue) {
-	String str = "";
-	for(int i = 0; i < array.length; i++) {
-	    str += array[i];
-	    if(i != array.length - 1) {str += glue;}
-	}
-	return str;
+	    String str = "";
+	    for(int i = 0; i < array.length; i++) {
+	       str += array[i];
+	       if(i != array.length - 1) {str += glue;}
+	    }
+	    return str;
     }
 
     private String[] subarray(String[] array, int begin, int end) {
-	String[] arr = new String[end - begin];
-	for(int i = begin; i < end; i++) {
-	    arr[i] = array[i];
-	}
-	return arr;
+	    String[] arr = new String[end - begin];
+	    for(int i = begin; i < end; i++) {
+	        arr[i] = array[i];
+	    }
+	    return arr;
     }
 
     private class MyStyle {
