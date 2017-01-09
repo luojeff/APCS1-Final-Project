@@ -41,7 +41,7 @@ public class LinePanel extends JPanel {
 
     public static int countOccurrences(String content, String s){
 	int i = 0;
-	Pattern pattern = Pattern.compile("\r\n" );
+	Pattern pattern = Pattern.compile(s);
 	Matcher matcher = pattern.matcher(content);
 	while (matcher.find()) {
 	    i++;
@@ -50,7 +50,7 @@ public class LinePanel extends JPanel {
     }
 
     public void update(){
-	int numReturns = countOccurrences(editorArea.getText(), "\r\n");
+	int numReturns = countOccurrences(editorArea.getText(), "\n");
 	
         numTextPane.setText("1");
 	for(int i=2; i<numReturns+2; i++){
