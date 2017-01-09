@@ -18,11 +18,14 @@ public class EditorArea extends JPanel {
     private int fontSize;  
     private TestFilter tf;
     private StringBuilder textContents;
-
-    public EditorArea(String fontName, int fontSize) {
+    private LinePanel lineNums;
+    
+    public EditorArea(String fontName, int fontSize, LinePanel lineNums) {
 	super(new BorderLayout());
 	this.fontName = fontName;
 	this.fontSize = fontSize;
+	this.lineNums = lineNums;
+	
 	doc = new DefaultStyledDocument();
 	ePane = new JTextPane(doc);	
 	tf = new TestFilter();
@@ -68,8 +71,9 @@ public class EditorArea extends JPanel {
 
     public void changeFont(String fontname, int size){
 	fontSize = size;
-	font = new Font(fontname, Font.PLAIN, size);
+	font = new Font(fontname, Font.PLAIN, fontSize);
 	ePane.setFont(font);
+	lineNums.changeFont(fontname, fontSize);
     }
 
     public int getFontSize(){

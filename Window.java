@@ -8,6 +8,7 @@ import java.awt.datatransfer.*;
 public class Window extends JFrame implements ActionListener {
     private String initTitle = "Text Editor";
     private JPanel menuPanel, textPanel, mainPanel;
+    private LinePanel linePanel;
     private JLabel label;
     private JMenuBar menuBar;
     private JMenu menu1, menu2, menu3, menu4;
@@ -23,14 +24,17 @@ public class Window extends JFrame implements ActionListener {
      */
     public Window() {
 	this.setTitle(initTitle + " | New");
-	this.setSize(1200, 800);
-	this.setLocation(300, 100);
+	this.setSize(1500, 1000);
+	this.setResizable(true); // CAN DISABLE
+	this.setLocation(400, 100);
 	this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 	pane = this.getContentPane();
 
 	menuPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	textPanel = new JPanel(new BorderLayout());
+	linePanel = new LinePanel();
+	textPanel.add(linePanel, BorderLayout.WEST);
 	mainPanel = new JPanel();
 
 	mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
@@ -137,7 +141,8 @@ public class Window extends JFrame implements ActionListener {
 	m4s2i5.setActionCommand("20");
 	m4s2i6.setActionCommand("22");
 	
-	editField = new EditorArea("Consolas", 18);
+	editField = new EditorArea("Consolas", 18, linePanel);
+	linePanel.changeFont(editField.getCurrentFont(), editField.getFontSize());
 	label = new JLabel("Save as: ");
 	label.setVisible(false);
 
