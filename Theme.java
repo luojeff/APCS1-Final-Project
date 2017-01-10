@@ -10,6 +10,8 @@ public class Theme {
         definitions = new HashMap<String, MyStyle>();
         String[] lines = styles.split("\n");
         for(String l: lines) {
+            l = l.trim();
+            if(l.startsWith("#")) {continue;}
             String name = l.split(" ")[0];
             String[] props = l.substring(l.indexOf(" ") + 1).split(";");
             definitions.put(name, new MyStyle(props));
