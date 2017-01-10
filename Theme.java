@@ -36,6 +36,7 @@ public class Theme {
         in.useDelimiter("\n");
         String str = "";
         while(in.hasNext()) {str += in.next() + "\n";}
+        in.close();
         return new Theme(str.substring(0, str.length() - 1));
     }
 
