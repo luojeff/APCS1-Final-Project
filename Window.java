@@ -145,7 +145,7 @@ public class Window extends JFrame implements ActionListener {
 	m4s2i5.setActionCommand("20");
 	m4s2i6.setActionCommand("22");
 	
-	editField = new EditorArea("Consolas", 18);
+	editField = new EditorArea("Monospaced", 18);
 	linePanel = new LinePanel(editField);
 	linePanel.changeFont(editField.getCurrentFont(), editField.getFontSize());
 	editField.setLinePanel(linePanel);
