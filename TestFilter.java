@@ -5,8 +5,11 @@ import java.util.ArrayList;
 public class TestFilter extends DocumentFilter {
     public static Object charState = new Object();
 
+    public Theme theme;
+
     public TestFilter() {
         super();
+        theme = new Theme("tag-* color 0 0 255");
     }
 
     public void replace(FilterBypass fb, int offset, int length, String str, AttributeSet attr) throws BadLocationException {
@@ -62,7 +65,8 @@ public class TestFilter extends DocumentFilter {
             //System.out.println("Name of \"" + piece[1] + "\" is " + set.getAttribute(AbstractDocument.ElementNameAttribute));
             named.removeAttribute(AbstractDocument.ElementNameAttribute);
             named.addAttribute(AbstractDocument.ElementNameAttribute, piece[0]);
-            super.replace(fb, offset, length, piece[1], getStyle(piece[0], named));
+            named.addAttributes(theme.getStyle(piece[0]));
+            super.replace(fb, offset, length, piece[1], named);
         }
     }
 
