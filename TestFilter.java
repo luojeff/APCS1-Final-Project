@@ -9,7 +9,7 @@ public class TestFilter extends DocumentFilter {
 
     public TestFilter() {
         super();
-        theme = new Theme("tag-* color 0 0 255");
+        theme = new Theme("$blue 0 0 255\ntag-* color $blue\nattribute-name color 255 0 255");
     }
 
     public void replace(FilterBypass fb, int offset, int length, String str, AttributeSet attr) throws BadLocationException {
@@ -169,6 +169,7 @@ public class TestFilter extends DocumentFilter {
         }
         if(previous.equals("tag-name")) {
             if(Character.isWhitespace(c)) {return "attribute-name";}
+            else if(c == '>') {return "tag-end";}
             else {return "tag-name";}
         }
         if(previous.equals("attribute-name")) {
