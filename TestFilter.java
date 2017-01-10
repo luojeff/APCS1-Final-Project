@@ -5,8 +5,12 @@ import java.util.ArrayList;
 public class TestFilter extends DocumentFilter {
     public static Object charState = new Object();
 
+    public Theme theme;
+
     public TestFilter() {
         super();
+        try {theme = Theme.fromFile("default_theme.txt");}
+        catch(Exception e) {theme = new Theme("tag-* color 0 0 255");}
     }
 
     public void replace(FilterBypass fb, int offset, int length, String str, AttributeSet attr) throws BadLocationException {
@@ -62,7 +66,8 @@ public class TestFilter extends DocumentFilter {
             //System.out.println("Name of \"" + piece[1] + "\" is " + set.getAttribute(AbstractDocument.ElementNameAttribute));
             named.removeAttribute(AbstractDocument.ElementNameAttribute);
             named.addAttribute(AbstractDocument.ElementNameAttribute, piece[0]);
-            super.replace(fb, offset, length, piece[1], getStyle(piece[0], named));
+            named.addAttributes(theme.getStyle(piece[0]));
+            super.replace(fb, offset, length, piece[1], named);
         }
     }
 
@@ -73,26 +78,32 @@ public class TestFilter extends DocumentFilter {
     public AttributeSet getStyle(String context, AttributeSet parent) {
         SimpleAttributeSet style = new SimpleAttributeSet(parent);
         switch(context) {
-	case "":
-	    StyleConstants.setForeground(style, Color.black);
+            case "":
+                StyleConstants.setForeground(style, Color.black);
             break;
-	case "tag":
-	    StyleConstants.setForeground(style, Color.blue);
-	    break;
-	case "attribute-name":
-	    StyleConstants.setForeground(style, Color.magenta);
-	    break;
-	case "attribute-separator":
-	    StyleConstants.setForeground(style, new Color(144, 19, 156));
-	    break;
-	case "attribute-value":
-	    StyleConstants.setForeground(style, new Color(27, 127, 209));
-	    break;
-	case "attribute-value-quoted":
-	    StyleConstants.setForeground(style, new Color(27, 127, 209));
-	    break;
-	case "tag-end":
-	    StyleConstants.setForeground(style, Color.blue);
+            case "tag-start":
+                StyleConstants.setForeground(style, Color.blue);
+                break;
+            case "tag-name":
+                StyleConstants.setForeground(style, Color.blue);
+                break;
+            case "attribute-name":
+                StyleConstants.setForeground(style, Color.magenta);
+                break;
+            case "attribute-separator":
+                StyleConstants.setForeground(style, new Color(144, 19, 156));
+                break;
+            case "attribute-value":
+                StyleConstants.setForeground(style, new Color(27, 127, 209));
+                break;
+            case "attribute-value-quoted":
+                StyleConstants.setForeground(style, new Color(27, 127, 209));
+                break;
+            case "html-comment":
+                StyleConstants.setForeground(style, new Color(100, 100, 100));
+                break;
+            case "tag-end":
+                StyleConstants.setForeground(style, Color.blue);
         }
         return style;
     }
@@ -141,12 +152,26 @@ public class TestFilter extends DocumentFilter {
      */
     public String determineState(String previous, char c) {
         if(previous.equals("")) {
-            if(c == '<') {return "tag";}
+            if(c == '<') {return "tag-start";}
         }
-        if(previous.equals("tag")) {
+        if(previous.equals("tag-start")) {
             if(c == '>') {return "tag-end";}
-            else if(Character.isWhitespace(c)) {return "attribute-name";}
-            else {return "tag";}
+            else if(c == '!') {return "tag-special";}
+            else if(Character.isWhitespace(c)) {return "tag-start";}
+            else {return "tag-name";}
+        }
+        if(previous.equals("tag-special")) {
+            if(c == '-') {return "tag-special-comment-partial";}
+            return "tag-name";
+        }
+        if(previous.equals("tag-special-comment-partial")) {
+            if(c == '-') {return "html-comment";}
+            return "tag-name";
+        }
+        if(previous.equals("tag-name")) {
+            if(Character.isWhitespace(c)) {return "attribute-name";}
+            else if(c == '>') {return "tag-end";}
+            else {return "tag-name";}
         }
         if(previous.equals("attribute-name")) {
             if(c == '>') {return "tag-end";}
@@ -169,7 +194,19 @@ public class TestFilter extends DocumentFilter {
             return "attribute-value-quoted";
         }
         if(previous.equals("tag-end")) {
-            if(c == '<') {return "tag";}
+            if(c == '<') {return "tag-start";}
+        }
+        if(previous.equals("html-comment")) {
+            if(c == '-') {return "html-comment-1";}
+            return "html-comment";
+        }
+        if(previous.equals("html-comment-1")) {
+            if(c == '-') {return "html-comment-2";}
+            return "html-comment";
+        }
+        if(previous.equals("html-comment-2")) {
+            if(c == '>') {return "tag-end";}
+            return "html-comment";
         }
         return "";
     }
