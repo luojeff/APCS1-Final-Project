@@ -16,6 +16,7 @@ public class Window extends JFrame implements ActionListener {
     private JScrollPane scrollPane;
     private EditorArea editField;
     private Container pane;
+    private FileUpdateChecker checker;
 
     /*
      * Sets up the main window with two panels. One panel contains the menu bar,
@@ -154,37 +155,25 @@ public class Window extends JFrame implements ActionListener {
 
 	scrollPane = new JScrollPane(textPanel);
 	scrollPane.getVerticalScrollBar().setUnitIncrement(18);
-	bottomPanel.add(scrollPane, BorderLayout.CENTER); 
-	
-	/*
-	  scroll = new JScrollPane(textPane);
-	  scroll.getVerticalScrollBar().setUnitIncrement(18);
-	  bottomPanel.add(scroll, BorderLayout.CENTER);
-
-	*/
-	/*
-	  scroll = new JScrollPane(editField);
-	  scroll.getVerticalScrollBar().setUnitIncrement(18);
-	  textPanel.add(scroll, BorderLayout.CENTER);
-	*/	
-	/*
-	  scroll = new JScrollPane(linePanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-	  scroll2 = new JScrollPane(linePanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-	  scroll.getVerticalScrollBar().setModel(scroll2.getVerticalScrollBar().getModel());
-	*/
+	bottomPanel.add(scrollPane, BorderLayout.CENTER);
     }
+    
     public void actionPerformed(ActionEvent e) {
 	Clipboard clipBoard = Toolkit.getDefaultToolkit().getSystemClipboard();
 	String event = e.getActionCommand();
-	FileExplorer fe = new FileExplorer(editField);
+	FileExplorer fe = new FileExplorer(editField);	
 	
 	switch (event) {
 	case "NEW":
-	    fe.setRead(false);
-	    fe.setAutoOverwrite(false);
-	    fe.revealExplorer();
-	    setTitle(initTitle + " | New");
-	    editField.setText("");
+	    if(checker != null && checker.isTextChanged(editField.getText())){
+		fe.setRead(false);
+		fe.revealExplorer();
+		setTitle(initTitle + " | New");
+		editField.setText("");
+	    } else {
+		setTitle(initTitle + " | New");
+		editField.setText("");
+	    }
 	    break;
 	case "QUIT":
 	    System.exit(0);
@@ -234,20 +223,35 @@ public class Window extends JFrame implements ActionListener {
 	    if (event.equals("OPEN")) {
 		fe.setRead(true);
 		fe.revealExplorer();
-		editField.setText(fe.getContents());
-		this.setTitle(initTitle + " | " + fe.getFileName());
-	    } else if (event.equals("SAVEAS")){
+
+		if(fe.getFileName() != null){
+		    editField.setText(fe.getContents());
+		    checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
+		    this.setTitle(initTitle + " | " + fe.getFileName());
+		    System.out.println("Current File: " + fe.getFileName());
+		}
+	    } else if (event.equals("SAVEAS")){				
 		fe.setRead(false);
-		fe.setAutoOverwrite(false);
 		fe.revealExplorer();
+		
+		checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
 		this.setTitle(initTitle + " | " + fe.getFileName());
+		System.out.println("Current File: " + fe.getFileName());
 	    } else {
 	        fe.setRead(false);
-		fe.setAutoOverwrite(true);
-		fe.revealExplorer();
-		this.setTitle(initTitle + " | " + fe.getFileName());
+
+		if(checker == null){
+		    fe.revealExplorer();
+		    checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
+		    this.setTitle(initTitle + " | " + fe.getFileName());
+		    System.out.println("Current File: " + fe.getFileName());
+		} else if(checker.isTextChanged(editField.getText())) {
+		    fe.setAutoOverwrite(true, checker.returnFile());
+		    fe.revealExplorer();   
+		    this.setTitle(initTitle + " | " + checker.returnFileName());
+		    System.out.println("Current File: " + checker.returnFileName());
+		}	
 	    }
 	}
     }
 }
-

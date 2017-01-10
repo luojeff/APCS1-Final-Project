@@ -1,6 +1,6 @@
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.text.StyledDocument;
+import javax.swing.text.*;
 import java.util.regex.*;
 
 /**
@@ -14,6 +14,8 @@ public class LinePanel extends JPanel {
     private int fontSize;
     private EditorArea editorArea;
     private Window w;
+    private int numReturns;
+    private SimpleAttributeSet attrs;
 
     public LinePanel() {
 	super(new BorderLayout());
@@ -23,6 +25,10 @@ public class LinePanel extends JPanel {
 	
         numPanel = new JPanel(new BorderLayout());
 	numPanel.add(numTextPane);
+
+	attrs = new SimpleAttributeSet();
+	attrs.addAttribute(StyleConstants.CharacterConstants.Foreground, Color.GRAY);
+	numTextPane.setCharacterAttributes(attrs, true);
 	
 	this.add(numTextPane, BorderLayout.EAST);
     }

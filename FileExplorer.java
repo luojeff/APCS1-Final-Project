@@ -12,9 +12,10 @@ import javax.swing.text.JTextComponent;
 public class FileExplorer {
     private File file;
     private String contents = "";
-    private Boolean read, autoOverwrite;
+    private Boolean read;
     private EditorArea textField;
     private String fileName;
+    private boolean autoOverwrite;
     JFileChooser fileChooser;
 
     public FileExplorer(EditorArea textField) {
@@ -29,9 +30,13 @@ public class FileExplorer {
 		readFile();
 	    }
 	} else {
-	    int val = fileChooser.showSaveDialog(null);
-	    if (val == JFileChooser.APPROVE_OPTION) {
-		writeFile();
+	    if(autoOverwrite){
+		writeContents(file, textField.getText());
+	    } else {
+		int val = fileChooser.showSaveDialog(null);
+		if (val == JFileChooser.APPROVE_OPTION) {
+		    writeFile();
+		}
 	    }
 	}
     }
@@ -43,32 +48,27 @@ public class FileExplorer {
     }
 
     public void writeFile(){
-	if (autoOverwrite) {
-	    File current = new File(fileName);
-	    writeContents(current, textField.getText());
+	file = fileChooser.getSelectedFile();
+	if (!file.exists()) {
+	    writeContents(file, textField.getText());
 	    fileName = file.getAbsolutePath();
 	} else {
-	    file = fileChooser.getSelectedFile();
-	    if (!file.exists()){
+	    int response = JOptionPane.showConfirmDialog(null, "Do you want to overwrite an existing file?",
+							 "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+	    if (response == JOptionPane.YES_OPTION) {
 		writeContents(file, textField.getText());
 		fileName = file.getAbsolutePath();
-	    } else {
-		int response = JOptionPane.showConfirmDialog(null, "Do you want to overwrite an existing file?",
-							     "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-		if (response == JOptionPane.YES_OPTION) {
-		    writeContents(file, textField.getText());
-		}
 	    }
 	}
     }
 
+    public void setAutoOverwrite(boolean b, File file){
+	this.file = file;
+	autoOverwrite = b;
+    }
+    
     public void setRead(boolean b){
 	read = b;
-    }
-
-    // True for Save, False for Save As
-    public void setAutoOverwrite(boolean b){
-	autoOverwrite = b;
     }
 
     public String getContents() {
