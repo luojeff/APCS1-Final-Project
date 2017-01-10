@@ -5,16 +5,26 @@ import javax.swing.text.*;
 
 public class Theme {
     public HashMap<String, MyStyle> definitions;
+    public HashMap<String, String> variables;
 
     public Theme(String styles) {
         definitions = new HashMap<String, MyStyle>();
+        variables = new HashMap<String, String>();
         String[] lines = styles.split("\n");
         for(String l: lines) {
             l = l.trim();
             if(l.startsWith("#")) {continue;}
-            String name = l.split(" ")[0];
-            String[] props = l.substring(l.indexOf(" ") + 1).split(";");
-            definitions.put(name, new MyStyle(props));
+            else if(l.startsWith("$")) {
+                String name = l.split(" ")[0].substring(1); //from the dollar sign till space
+                String val = l.substring(l.indexOf(" ") + 1); //after space till newline
+                variables.put(name, val);
+            }
+            else if(l.length() < 1) {continue;}
+            else {
+                String name = l.split(" ")[0];
+                String[] props = l.substring(l.indexOf(" ") + 1).split(";");
+                definitions.put(name, new MyStyle(props));
+            }
         }
     }
 
@@ -62,9 +72,33 @@ public class Theme {
     private String[] subarray(String[] array, int begin, int end) {
 	    String[] arr = new String[end - begin];
 	    for(int i = begin; i < end; i++) {
-	        arr[i] = array[i];
+	        arr[i - begin] = array[i];
 	    }
 	    return arr;
+    }
+
+    private String[] subarray(String[] array, int begin) {
+        return subarray(array, begin, array.length);
+    }
+
+    public boolean hasVariable(String name) {
+        return variables.containsKey(name);
+    }
+
+    public String getVariable(String name) {
+        if(!hasVariable(name)) {return null;}
+        return variables.get(name);
+    }
+
+    public Color toColor(String[] params) {
+        if(params[0].startsWith("$")) {
+            return toColor(getVariable(params[0].substring(1)).split(" "));
+        }
+        if(params.length == 1) {
+            int c = Integer.parseInt(params[0]);
+            return new Color(c, c, c);
+        }
+        return new Color(Integer.parseInt(params[0]), Integer.parseInt(params[1]), Integer.parseInt(params[2]));
     }
 
     private class MyStyle {
@@ -77,7 +111,9 @@ public class Theme {
                     case "color":
                         Color c = Color.black;
                         try {
-                            c = new Color(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+                            c = toColor(subarray(args, 1));
+                        } catch(Exception e) {
+                            //nothing
                         } finally {
                             StyleConstants.setForeground(set, c);
                         }
