@@ -93,6 +93,14 @@ public class Theme {
         return subarray(array, begin, array.length);
     }
 
+    private String[] skipEmpties(String[] array) {
+        ArrayList<String> kept = new ArrayList<String>();
+        for(String s : array) {
+            if(!s.equals("")) {kept.add(s);}
+        }
+        return kept.toArray(new String[0]);
+    }
+
     public boolean hasVariable(String name) {
         return variables.containsKey(name);
     }
@@ -118,7 +126,7 @@ public class Theme {
         public MyStyle(String[] styles) {
             set = new SimpleAttributeSet();
             for(String s : styles) {
-                String[] args = s.split(" ");
+                String[] args = skipEmpties(s.split(" "));
                 switch(args[0]) {
                     case "color":
                         Color c = Color.black;
