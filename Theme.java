@@ -37,8 +37,12 @@ public class Theme {
     	    } else {
     		    contexts = search.split("-");
     		    contexts = subarray(contexts, 0, contexts.length - 1);
-    		    contexts[contexts.length - 1] = "*";
-    		    search = join(contexts, "-");
+        		if(contexts.length > 0) {
+                    contexts[contexts.length - 1] = "*";
+        		    search = join(contexts, "-");
+                } else {
+                    search = ""; //stops loop
+                }
     	    }
     	}
     	return new MyStyle(new String[] {"color 0 0 0"}).set;
