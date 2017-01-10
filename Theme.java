@@ -1,5 +1,8 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
+import java.io.FileNotFoundException;
+import java.io.File;
 import java.awt.Color;
 import javax.swing.text.*;
 
@@ -26,6 +29,14 @@ public class Theme {
                 definitions.put(name, new MyStyle(props));
             }
         }
+    }
+
+    public static Theme fromFile(String filename) throws FileNotFoundException {
+        Scanner in = new Scanner(new File(filename));
+        in.useDelimiter("\n");
+        String str = "";
+        while(in.hasNext()) {str += in.next() + "\n";}
+        return new Theme(str.substring(0, str.length() - 1));
     }
 
     /**

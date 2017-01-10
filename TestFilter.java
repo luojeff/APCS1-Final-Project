@@ -9,7 +9,8 @@ public class TestFilter extends DocumentFilter {
 
     public TestFilter() {
         super();
-        theme = new Theme("$blue 0 0 255\ntag-* color $blue\nattribute-name color 255 0 255");
+        try {theme = Theme.fromFile("default_theme.txt");}
+        catch(Exception e) {theme = new Theme("tag-* color 0 0 255");}
     }
 
     public void replace(FilterBypass fb, int offset, int length, String str, AttributeSet attr) throws BadLocationException {
