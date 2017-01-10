@@ -7,16 +7,15 @@ import java.awt.datatransfer.*;
 
 public class Window extends JFrame implements ActionListener {
     private String initTitle = "Text Editor";
-    private JPanel menuPanel, textPanel, mainPanel;
+    private JPanel menuPanel, textPanel, bottomPanel, mainPanel;
     private LinePanel linePanel;
     private JLabel label;
     private JMenuBar menuBar;
     private JMenu menu1, menu2, menu3, menu4;
     private JMenu submenu1, submenu2;
-    private JScrollPane scroll, scroll2;
+    private JScrollPane scrollPane;
     private EditorArea editField;
     private Container pane;
-    private Container editorContainer;
 
     /*
      * Sets up the main window with two panels. One panel contains the menu bar,
@@ -34,16 +33,21 @@ public class Window extends JFrame implements ActionListener {
 
 	menuPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	textPanel = new JPanel(new BorderLayout());
+	bottomPanel = new JPanel(new BorderLayout());
 	mainPanel = new JPanel();
 
 	mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
 	mainPanel.add(menuPanel);
-	mainPanel.add(textPanel);
+	mainPanel.add(bottomPanel);
 	pane.add(mainPanel);
 
 	// Creates a menubar on the top which can contain the common
 	// functions of most editors (File, Edit, Options, Help, etc...)
 	menuBar = new JMenuBar();
+	label = new JLabel("Save as: ");
+	label.setVisible(false);
+	menuPanel.add(menuBar);
+	menuPanel.add(label);
 
 	// Submenus in menubar
 	menu1 = new JMenu("File");
@@ -142,23 +146,31 @@ public class Window extends JFrame implements ActionListener {
 	
 	editField = new EditorArea("Consolas", 18);
 	linePanel = new LinePanel(editField);
-	editField.setLinePanel(linePanel);
 	linePanel.changeFont(editField.getCurrentFont(), editField.getFontSize());
-	textPanel.add(linePanel, BorderLayout.WEST);
-	label = new JLabel("Save as: ");
-	label.setVisible(false);
-
-	menuPanel.add(menuBar);
-	menuPanel.add(label);
-
+	editField.setLinePanel(linePanel);
 	
-	scroll = new JScrollPane(editField);
-	scroll.getVerticalScrollBar().setUnitIncrement(18);
-        textPanel.add(scroll, BorderLayout.CENTER);
+	textPanel.add(editField, BorderLayout.CENTER);
+	textPanel.add(linePanel, BorderLayout.WEST);	
+
+	scrollPane = new JScrollPane(textPanel);
+	scrollPane.getVerticalScrollBar().setUnitIncrement(18);
+	bottomPanel.add(scrollPane, BorderLayout.CENTER); 
+	
 	/*
-	scroll = new JScrollPane(linePanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-	scroll2 = new JScrollPane(linePanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-	scroll.getVerticalScrollBar().setModel(scroll2.getVerticalScrollBar().getModel());
+	  scroll = new JScrollPane(textPane);
+	  scroll.getVerticalScrollBar().setUnitIncrement(18);
+	  bottomPanel.add(scroll, BorderLayout.CENTER);
+
+	*/
+	/*
+	  scroll = new JScrollPane(editField);
+	  scroll.getVerticalScrollBar().setUnitIncrement(18);
+	  textPanel.add(scroll, BorderLayout.CENTER);
+	*/	
+	/*
+	  scroll = new JScrollPane(linePanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	  scroll2 = new JScrollPane(linePanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	  scroll.getVerticalScrollBar().setModel(scroll2.getVerticalScrollBar().getModel());
 	*/
     }
     public void actionPerformed(ActionEvent e) {
