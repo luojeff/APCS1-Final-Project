@@ -1,0 +1,10 @@
+javac EditorArea.java
+javac FileExplorer.java
+javac FileUpdateChecker.java
+javac HTMLCodeKit.java
+javac LinePanel.java
+javac TestFilter.java
+javac Theme.java
+javac Window.java
+javac Main.java
+java Main
