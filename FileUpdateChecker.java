@@ -19,11 +19,12 @@ public class FileUpdateChecker {
 	originalContents = newContents;
     }
 
-    public File returnFile(){
-	return file;
-    }
-
+    
     public String returnFileName(){
 	return file.getAbsolutePath();
+    }
+
+    public File returnFile(){
+	return file;
     }
 }

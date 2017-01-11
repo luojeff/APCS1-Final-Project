@@ -7,16 +7,24 @@ import java.awt.datatransfer.*;
 
 public class Window extends JFrame implements ActionListener {
     private String initTitle = "Text Editor";
-    private JPanel menuPanel, textPanel, bottomPanel, mainPanel;
+    private JPanel menuPanel, textPanel, visualizerPanel, mainPanel;
+    private JSplitPane bottomPanel;
     private LinePanel linePanel;
-    private JLabel label;
     private JMenuBar menuBar;
     private JMenu menu1, menu2, menu3, menu4;
     private JMenu submenu1, submenu2;
+    private JMenuItem m1i1, m1i2, m1i3, m1i4, m1i5;
+    private JMenuItem m2i1, m2i2, m2i3, m2i4, m2i5;
+    private JMenuItem m3i1, m3i2, m3i3, m3i4, m3i5;
+    private JMenuItem m4i1, m4i2, m4i3, m4i4, m4i5;
+    private JMenuItem m5i1, m5i2, m5i3, m5i4, m5i5;
+    private JMenuItem m4s1i1, m4s1i2, m4s1i3;
+    private JMenuItem m4s2i1, m4s2i2, m4s2i3, m4s2i4, m4s2i5, m4s2i6;
     private JScrollPane scrollPane;
     private EditorArea editField;
     private Container pane;
     private FileUpdateChecker checker;
+    private JEditorPane visualizer;
 
     /*
      * Sets up the main window with two panels. One panel contains the menu bar,
@@ -24,6 +32,17 @@ public class Window extends JFrame implements ActionListener {
      * ActionListener
      */
     public Window() {
+	setup();	
+	setMenuBar();
+	setActionCommands();
+	if(checker != null){
+	    setupVisualizer("C:/Users/luoje/Desktop/index.html");
+	} else {
+	    setupVisualizer("none");
+	}
+    }
+
+    public void setup(){	
 	this.setTitle(initTitle + " | New");
 	this.setSize(1500, 1000);
 	this.setResizable(true); // CAN DISABLE
@@ -34,21 +53,35 @@ public class Window extends JFrame implements ActionListener {
 
 	menuPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	textPanel = new JPanel(new BorderLayout());
-	bottomPanel = new JPanel(new BorderLayout());
+	visualizerPanel = new JPanel(new BorderLayout());
+	bottomPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, textPanel, visualizerPanel);
+	bottomPanel.setDividerLocation(1000);
 	mainPanel = new JPanel();
-
-	mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
-	mainPanel.add(menuPanel);
-	mainPanel.add(bottomPanel);
+	mainPanel.setLayout(new BorderLayout());
+	mainPanel.add(menuPanel, BorderLayout.NORTH);
+	mainPanel.add(bottomPanel, BorderLayout.CENTER);
 	pane.add(mainPanel);
 
 	// Creates a menubar on the top which can contain the common
-	// functions of most editors (File, Edit, Options, Help, etc...)
+	// functions of most editors (File, Edit, Options, Help, etc...)	
+	
+	editField = new EditorArea("Monospaced", 18);
+	linePanel = new LinePanel(editField);
+	linePanel.changeFont(editField.getCurrentFont(), editField.getFontSize());
+	editField.setLinePanel(linePanel);
+	
+	textPanel.add(editField, BorderLayout.CENTER);
+	textPanel.add(linePanel, BorderLayout.WEST);	
+
+	scrollPane = new JScrollPane(textPanel);
+	scrollPane.getVerticalScrollBar().setUnitIncrement(18);
+	bottomPanel.add(scrollPane);
+    }
+
+    public void setMenuBar(){
 	menuBar = new JMenuBar();
-	label = new JLabel("Save as: ");
-	label.setVisible(false);
+	
 	menuPanel.add(menuBar);
-	menuPanel.add(label);
 
 	// Submenus in menubar
 	menu1 = new JMenu("File");
@@ -62,32 +95,31 @@ public class Window extends JFrame implements ActionListener {
 	menuBar.add(menu3);
 
 	// Items in submenus
-	JMenuItem m1i1 = new JMenuItem("Open");
-	JMenuItem m1i2 = new JMenuItem("Save");
-	JMenuItem m1i3 = new JMenuItem("Save As");
-	JMenuItem m1i4 = new JMenuItem("Exit");
-	JMenuItem m1i5 = new JMenuItem("New");
+	m1i1 = new JMenuItem("Open");
+	m1i2 = new JMenuItem("Save");
+	m1i3 = new JMenuItem("Save As");
+	m1i4 = new JMenuItem("Exit");
+	m1i5 = new JMenuItem("New");
+	m2i1 = new JMenuItem("Copy All");
+	m2i2 = new JMenuItem("Paste");
 	
-	JMenuItem m2i1 = new JMenuItem("Copy All");
-	JMenuItem m2i2 = new JMenuItem("Paste");
-	
-	JMenuItem m3i1 = new JMenuItem("About");
+	m3i1 = new JMenuItem("About");
 	
 	submenu1 = new JMenu("Change Font");
 	submenu2 = new JMenu("Change Font Size");
 	
 	// Font selections for submenu in submenu
-	JMenuItem m4s1i1 = new JMenuItem("Monospaced");
-	JMenuItem m4s1i2 = new JMenuItem("Consolas");
-	JMenuItem m4s1i3 = new JMenuItem("Arial");
+	m4s1i1 = new JMenuItem("Monospaced");
+	m4s1i2 = new JMenuItem("Consolas");
+	m4s1i3 = new JMenuItem("Arial");
 
 	// Font sizes for submenu
-	JMenuItem m4s2i1 = new JMenuItem("12");
-	JMenuItem m4s2i2 = new JMenuItem("14");
-	JMenuItem m4s2i3 = new JMenuItem("16");
-	JMenuItem m4s2i4 = new JMenuItem("18");
-	JMenuItem m4s2i5 = new JMenuItem("20");
-	JMenuItem m4s2i6 = new JMenuItem("22");
+	m4s2i1 = new JMenuItem("12");
+	m4s2i2 = new JMenuItem("14");
+	m4s2i3 = new JMenuItem("16");
+	m4s2i4 = new JMenuItem("18");
+	m4s2i5 = new JMenuItem("20");
+	m4s2i6 = new JMenuItem("22");
 
 	menu1.add(m1i5);
 	menu1.add(m1i1);
@@ -108,7 +140,9 @@ public class Window extends JFrame implements ActionListener {
 	submenu2.add(m4s2i4);
 	submenu2.add(m4s2i5);
 	submenu2.add(m4s2i6);
+    }
 
+    public void setActionCommands(){
 	m1i1.addActionListener(this);
 	m1i2.addActionListener(this);
 	m1i3.addActionListener(this);
@@ -144,18 +178,25 @@ public class Window extends JFrame implements ActionListener {
 	m4s2i4.setActionCommand("18");
 	m4s2i5.setActionCommand("20");
 	m4s2i6.setActionCommand("22");
-	
-	editField = new EditorArea("Monospaced", 18);
-	linePanel = new LinePanel(editField);
-	linePanel.changeFont(editField.getCurrentFont(), editField.getFontSize());
-	editField.setLinePanel(linePanel);
-	
-	textPanel.add(editField, BorderLayout.CENTER);
-	textPanel.add(linePanel, BorderLayout.WEST);	
+    }
 
-	scrollPane = new JScrollPane(textPanel);
-	scrollPane.getVerticalScrollBar().setUnitIncrement(18);
-	bottomPanel.add(scrollPane, BorderLayout.CENTER);
+    public void setupVisualizer(String fileName){
+	visualizer = new JEditorPane();
+	visualizer.setEditable(false);
+	JScrollPane htmlScroller = new JScrollPane(visualizer);
+        htmlScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	
+        updateVisualizer(fileName);
+	visualizerPanel.add(visualizer);
+    }
+
+    public void updateVisualizer(String fileName){	
+	try{
+	    visualizer.setPage((new File(fileName)).toURI().toURL());
+	} catch (IOException e){
+	    System.out.println("Can't retrieve HTML!");
+	}
+	visualizerPanel.revalidate();
     }
     
     public void actionPerformed(ActionEvent e) {
@@ -229,6 +270,7 @@ public class Window extends JFrame implements ActionListener {
 		    checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
 		    this.setTitle(initTitle + " | " + fe.getFileName());
 		    System.out.println("Current File: " + fe.getFileName());
+		    updateVisualizer(fe.getFileName());
 		}
 	    } else if (event.equals("SAVEAS")){				
 		fe.setRead(false);
@@ -237,6 +279,7 @@ public class Window extends JFrame implements ActionListener {
 		checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
 		this.setTitle(initTitle + " | " + fe.getFileName());
 		System.out.println("Current File: " + fe.getFileName());
+		updateVisualizer(fe.getFileName());
 	    } else {
 	        fe.setRead(false);
 
@@ -245,11 +288,14 @@ public class Window extends JFrame implements ActionListener {
 		    checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
 		    this.setTitle(initTitle + " | " + fe.getFileName());
 		    System.out.println("Current File: " + fe.getFileName());
+
+		    updateVisualizer(fe.getFileName());
 		} else if(checker.isTextChanged(editField.getText())) {
 		    fe.setAutoOverwrite(true, checker.returnFile());
 		    fe.revealExplorer();   
 		    this.setTitle(initTitle + " | " + checker.returnFileName());
 		    System.out.println("Current File: " + checker.returnFileName());
+		    updateVisualizer(checker.returnFileName());
 		}	
 	    }
 	}
