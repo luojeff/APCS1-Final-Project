@@ -26,7 +26,7 @@ public class EditorArea extends JPanel {
 	this.fontSize = fontSize;
 	this.lineNums = lineNums;
 
-	doc = new DefaultStyledDocument();
+	doc = new SyntaxHighlighterDoc();
 	ePane = new JTextPane(doc);
 	tf = new TestFilter();
 
