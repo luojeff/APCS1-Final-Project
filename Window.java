@@ -25,6 +25,7 @@ public class Window extends JFrame implements ActionListener {
     private Container pane;
     private FileUpdateChecker checker;
     private JEditorPane visualizer;
+    private Dimension ssDimension;
 
     /*
      * Sets up the main window with two panels. One panel contains the menu bar,
@@ -36,7 +37,7 @@ public class Window extends JFrame implements ActionListener {
 	setMenuBar();
 	setActionCommands();
 	if(checker != null){
-	    setupVisualizer("C:/Users/luoje/Desktop/index.html");
+	    setupVisualizer(checker.returnFileName());
 	} else {
 	    setupVisualizer("none");
 	}
@@ -44,7 +45,7 @@ public class Window extends JFrame implements ActionListener {
 
     public void setup(){	
 	this.setTitle(initTitle + " | New");
-	this.setSize(1500, 1000);
+	this.setSize(1300, 800);
 	this.setResizable(true); // CAN DISABLE
 	this.setLocation(400, 100);
 	this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -55,7 +56,14 @@ public class Window extends JFrame implements ActionListener {
 	textPanel = new JPanel(new BorderLayout());
 	visualizerPanel = new JPanel(new BorderLayout());
 	bottomPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, textPanel, visualizerPanel);
-	bottomPanel.setDividerLocation(1000);
+	
+	Rectangle rec = this.getBounds();
+	ssDimension = new Dimension(rec.width / 3, rec.height);
+	textPanel.setMinimumSize(ssDimension);
+	visualizerPanel.setMinimumSize(ssDimension);
+     
+	bottomPanel.setDividerLocation(rec.width / 2);
+	bottomPanel.setOneTouchExpandable(true);
 	mainPanel = new JPanel();
 	mainPanel.setLayout(new BorderLayout());
 	mainPanel.add(menuPanel, BorderLayout.NORTH);
@@ -196,6 +204,7 @@ public class Window extends JFrame implements ActionListener {
 	} catch (IOException e){
 	    System.out.println("Can't retrieve HTML!");
 	}
+	System.out.println("Sucess to theere");
 	visualizerPanel.revalidate();
     }
     
