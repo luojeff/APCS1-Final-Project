@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -16,7 +17,8 @@ public class Window extends JFrame implements ActionListener {
     private JMenuItem m1i1, m1i2, m1i3, m1i4, m1i5;
     private JMenuItem m2i1, m2i2, m2i3, m2i4, m2i5;
     private JMenuItem m3i1, m3i2, m3i3, m3i4, m3i5;
-    private JMenuItem m4i1, m4i2, m4i3, m4i4, m4i5;
+    private JCheckBoxMenuItem m4i1;
+    //private JMenuItem m4i1, m4i2, m4i3, m4i4, m4i5;
     private JMenuItem m5i1, m5i2, m5i3, m5i4, m5i5;
     private JMenuItem m4s1i1, m4s1i2, m4s1i3;
     private JMenuItem m4s2i1, m4s2i2, m4s2i3, m4s2i4, m4s2i5, m4s2i6;
@@ -24,7 +26,8 @@ public class Window extends JFrame implements ActionListener {
     private EditorArea editField;
     private Container pane;
     private FileUpdateChecker checker;
-    private JEditorPane visualizer;
+    private FileExplorer fe;
+    private HTMLVisualizer visuals;
     private Dimension ssDimension;
 
     /*
@@ -36,14 +39,10 @@ public class Window extends JFrame implements ActionListener {
 	setup();	
 	setMenuBar();
 	setActionCommands();
-	if(checker != null){
-	    setupVisualizer(checker.returnFileName());
-	} else {
-	    setupVisualizer("none");
-	}
+	setupVisuals();
     }
 
-    public void setup(){	
+    private void setup(){	
 	this.setTitle(initTitle + " | New");
 	this.setSize(1300, 800);
 	this.setResizable(true); // CAN DISABLE
@@ -81,14 +80,14 @@ public class Window extends JFrame implements ActionListener {
 	textPanel.add(editField, BorderLayout.CENTER);
 	textPanel.add(linePanel, BorderLayout.WEST);	
 
+	fe = new FileExplorer(editField);
 	scrollPane = new JScrollPane(textPanel);
 	scrollPane.getVerticalScrollBar().setUnitIncrement(18);
-	bottomPanel.add(scrollPane);
+	bottomPanel.add(scrollPane);	
     }
 
-    public void setMenuBar(){
+    private void setMenuBar(){
 	menuBar = new JMenuBar();
-	
 	menuPanel.add(menuBar);
 
 	// Submenus in menubar
@@ -115,7 +114,8 @@ public class Window extends JFrame implements ActionListener {
 	
 	submenu1 = new JMenu("Change Font");
 	submenu2 = new JMenu("Change Font Size");
-	
+
+	m4i1 = new JCheckBoxMenuItem("Show HTML Visualizer");
 	// Font selections for submenu in submenu
 	m4s1i1 = new JMenuItem("Monospaced");
 	m4s1i2 = new JMenuItem("Consolas");
@@ -137,6 +137,7 @@ public class Window extends JFrame implements ActionListener {
 	menu2.add(m2i1);
 	menu2.add(m2i2);
 	menu3.add(m3i1);
+	menu4.add(m4i1);
 	menu4.add(submenu1);
 	menu4.add(submenu2);
 	submenu1.add(m4s1i1);
@@ -150,7 +151,7 @@ public class Window extends JFrame implements ActionListener {
 	submenu2.add(m4s2i6);
     }
 
-    public void setActionCommands(){
+    private void setActionCommands(){
 	m1i1.addActionListener(this);
 	m1i2.addActionListener(this);
 	m1i3.addActionListener(this);
@@ -159,6 +160,7 @@ public class Window extends JFrame implements ActionListener {
 	m2i1.addActionListener(this);
 	m2i2.addActionListener(this);
 	m3i1.addActionListener(this);
+	m4i1.addActionListener(this);
 	m4s1i1.addActionListener(this);
 	m4s1i2.addActionListener(this);
 	m4s1i3.addActionListener(this);
@@ -177,6 +179,7 @@ public class Window extends JFrame implements ActionListener {
 	m2i1.setActionCommand("COPY");
 	m2i2.setActionCommand("PASTE");
 	m3i1.setActionCommand("ABOUT");
+	m4i1.setActionCommand("ACTIVATE-VISUALS");
 	m4s1i1.setActionCommand("FONT-MONO");
 	m4s1i2.setActionCommand("FONT-CONSOLAS");
 	m4s1i3.setActionCommand("FONT-ARIAL");
@@ -188,30 +191,19 @@ public class Window extends JFrame implements ActionListener {
 	m4s2i6.setActionCommand("22");
     }
 
-    public void setupVisualizer(String fileName){
-	visualizer = new JEditorPane();
-	visualizer.setEditable(false);
-	JScrollPane htmlScroller = new JScrollPane(visualizer);
-        htmlScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-	
-        updateVisualizer(fileName);
-	visualizerPanel.add(visualizer);
-    }
-
-    public void updateVisualizer(String fileName){	
-	try{
-	    visualizer.setPage((new File(fileName)).toURI().toURL());
-	} catch (IOException e){
-	    System.out.println("Can't retrieve HTML!");
+    private void setupVisuals(){
+	visuals = new HTMLVisualizer(visualizerPanel);
+	if(checker != null){
+	    visuals.setupVisualizer(checker.returnFileName());
+	} else {
+	    visuals.setupVisualizer("none");
 	}
-	System.out.println("Sucess to theere");
-	visualizerPanel.revalidate();
+	editField.setVisuals(visuals);
+	editField.setFileExplorer(fe);
     }
-    
     public void actionPerformed(ActionEvent e) {
 	Clipboard clipBoard = Toolkit.getDefaultToolkit().getSystemClipboard();
-	String event = e.getActionCommand();
-	FileExplorer fe = new FileExplorer(editField);	
+	String event = e.getActionCommand();	
 	
 	switch (event) {
 	case "NEW":
@@ -220,6 +212,7 @@ public class Window extends JFrame implements ActionListener {
 		fe.revealExplorer();
 		setTitle(initTitle + " | New");
 		editField.setText("");
+		checker = new FileUpdateChecker(new File("none"),"");
 	    } else {
 		setTitle(initTitle + " | New");
 		editField.setText("");
@@ -279,7 +272,7 @@ public class Window extends JFrame implements ActionListener {
 		    checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
 		    this.setTitle(initTitle + " | " + fe.getFileName());
 		    System.out.println("Current File: " + fe.getFileName());
-		    updateVisualizer(fe.getFileName());
+		    visuals.updateVisualizer(fe.getFileName());
 		}
 	    } else if (event.equals("SAVEAS")){				
 		fe.setRead(false);
@@ -288,7 +281,7 @@ public class Window extends JFrame implements ActionListener {
 		checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
 		this.setTitle(initTitle + " | " + fe.getFileName());
 		System.out.println("Current File: " + fe.getFileName());
-		updateVisualizer(fe.getFileName());
+		visuals.updateVisualizer(fe.getFileName());
 	    } else {
 	        fe.setRead(false);
 
@@ -297,16 +290,15 @@ public class Window extends JFrame implements ActionListener {
 		    checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
 		    this.setTitle(initTitle + " | " + fe.getFileName());
 		    System.out.println("Current File: " + fe.getFileName());
-
-		    updateVisualizer(fe.getFileName());
+		    visuals.updateVisualizer(fe.getFileName());
 		} else if(checker.isTextChanged(editField.getText())) {
 		    fe.setAutoOverwrite(true, checker.returnFile());
-		    fe.revealExplorer();   
-		    this.setTitle(initTitle + " | " + checker.returnFileName());
+		    fe.revealExplorer();
+		    this.setTitle(initTitle + " | " + fe.getFileName());
 		    System.out.println("Current File: " + checker.returnFileName());
-		    updateVisualizer(checker.returnFileName());
+		    visuals.updateVisualizer(fe.getFileName());
 		}	
 	    }
 	}
-    }
+    }   
 }

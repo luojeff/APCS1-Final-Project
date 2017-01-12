@@ -32,6 +32,7 @@ public class FileExplorer {
 	} else {
 	    if(autoOverwrite){
 		writeContents(file, textField.getText());
+		fileName = file.getAbsolutePath();
 	    } else {
 		int val = fileChooser.showSaveDialog(null);
 		if (val == JFileChooser.APPROVE_OPTION) {
@@ -74,9 +75,12 @@ public class FileExplorer {
     public String getContents() {
 	return contents;
     }
-
     public String getFileName() {
 	return fileName;
+    }
+
+    public File getFile() {
+	return file;
     }
     
     public void readContents(File file) {

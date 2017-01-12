@@ -10,15 +10,16 @@ import javax.swing.text.*;
  * allows for interaction. Also has more appealing text font and size
  */
 public class EditorArea extends JPanel {
+    private String fontName;
+    private int fontSize;
     private JTextPane ePane;
     private StyledDocument doc;
     private SimpleAttributeSet attrs;
     private Font font;
-    private String fontName;
-    private int fontSize;
     private TestFilter tf;
-    private StringBuilder textContents;
     private LinePanel lineNums;
+    private HTMLVisualizer visuals;
+    private FileExplorer fe;
 
     public EditorArea(String fontName, int fontSize) {
 	super(new BorderLayout());
@@ -62,6 +63,14 @@ public class EditorArea extends JPanel {
 	return ePane.getText();
     }
 
+    public void setVisuals(HTMLVisualizer visuals) {
+	this.visuals = visuals;
+    }
+
+    public void setFileExplorer(FileExplorer fe){
+	this.fe = fe;
+    }
+    
     public void setText(String contents) {
 	ePane.setText(contents);
     }
@@ -145,6 +154,12 @@ public class EditorArea extends JPanel {
 	     */
 
 	    lineNums.update();
+	    try{
+		System.out.println("fe-fileName: " + fe.getFileName());
+		visuals.updateVisualizer(fe.getFileName());
+	    } catch(NullPointerException e){
+		System.out.println("Save or open an HTML to view!");
+	    }
 	}
 
 	public void removeUpdate(DocumentEvent evt) {

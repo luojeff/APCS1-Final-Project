@@ -7,7 +7,6 @@ import java.util.regex.*;
  * Panel that displays line numbers
  */
 public class LinePanel extends JPanel {
-    private int[] lineNumsArray;
     private JTextPane numTextPane;
     private JPanel numPanel;
     private Font font;
