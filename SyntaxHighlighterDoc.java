@@ -6,6 +6,11 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
         System.out.println("Insert (" + offset + ", " + data.length);
     }
 
+    protected void insertUpdate(AbstractDocument.DefaultDocumentEvent evt, AttributeSet set) {
+	System.out.println("insertUpdate");
+	super.insertUpdate(evt, set);
+    }
+
     public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
         super.insertString(offset, str, a);
         System.out.println("inserString("+offset+","+str+")");
