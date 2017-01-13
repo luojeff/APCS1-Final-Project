@@ -135,13 +135,13 @@ public class EditorArea extends JPanel {
     }
 
     private class TestListener implements DocumentListener {
-	public String discoverChildren(Element e) {
+	    public String discoverChildren(Element e) {
             //((AbstractDocument.AbstractElement)e).dump(System.out, 2);
     	    String str = "" + e.getName() + "(" + e.getElementCount() + "|" + e.getStartOffset() + ":" + e.getEndOffset() + ")";
     	    if(e.getElementCount() > 0) {
-		str += " {";
-		for(int i = 0; i < e.getElementCount(); i++) {
-		    str += discoverChildren(e.getElement(i)) + ((i + 1 == e.getElementCount())?  "" : ", ");
+		        str += " {";
+		        for(int i = 0; i < e.getElementCount(); i++) {
+		            str += discoverChildren(e.getElement(i)) + ((i + 1 == e.getElementCount())?  "" : ", ");
                 }
                 str += "}";
             }
@@ -150,12 +150,24 @@ public class EditorArea extends JPanel {
 
         public void insertUpdate(DocumentEvent evt) {
             displayInfo(evt);
-	    lineNums.update();
+	        lineNums.update();
+            // SwingUtilities.invokeLater(new Runnable() {
+            //     public void run() {
+            //         DefaultStyledDocument doc = (DefaultStyledDocument)evt.getDocument();
+            //         try {
+            //             SimpleAttributeSet cool = new SimpleAttributeSet();
+            //             StyleConstants.setForeground(cool, Color.red);
+            //             doc.setCharacterAttributes(0, 1, cool, true);
+            //         } catch(Exception e) {
+            //             e.printStackTrace();
+            //         }
+            //     }
+            // });
         }
 
     	public void removeUpdate(DocumentEvent evt) {
             displayInfo(evt);
-	    lineNums.update();
+	        lineNums.update();
     	}
 
     	public void changedUpdate(DocumentEvent evt) {
