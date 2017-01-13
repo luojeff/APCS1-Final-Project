@@ -1,14 +1,16 @@
 import javax.swing.text.*;
 
 public class SyntaxHighlighterDoc extends DefaultStyledDocument {
+    private Theme theme;
+
     protected void insert(int offset, DefaultStyledDocument.ElementSpec[] data) throws BadLocationException {
         super.insert(offset, data);
         System.out.println("Insert (" + offset + ", " + data.length);
     }
 
     protected void insertUpdate(AbstractDocument.DefaultDocumentEvent evt, AttributeSet set) {
-	System.out.println("insertUpdate");
-	super.insertUpdate(evt, set);
+        System.out.println("insertUpdate");
+        super.insertUpdate(evt, set);
     }
 
     public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
