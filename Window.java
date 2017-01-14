@@ -29,6 +29,9 @@ public class Window extends JFrame implements ActionListener {
     private FileExplorer fe;
     private HTMLVisualizer visuals;
     private Dimension ssDimension;
+    private ArrayList<JMenu> menuArrayList;
+    private ArrayList<JMenuItem> menuItemList;
+      
 
     /*
      * Sets up the main window with two panels. One panel contains the menu bar,

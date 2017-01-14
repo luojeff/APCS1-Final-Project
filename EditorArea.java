@@ -51,10 +51,8 @@ public class EditorArea extends JPanel {
 	((AbstractDocument) doc).setDocumentFilter(tf);
 
 	attrs = new SimpleAttributeSet();
-
 	// Tests
 	// System.out.println(JEditorPane.getEditorKitClassNameForContentType("x-code/html"));
-
 	ePane.setCharacterAttributes(attrs, true);
 	ePane.revalidate();
     }
