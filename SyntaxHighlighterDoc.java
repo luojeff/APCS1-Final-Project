@@ -8,6 +8,7 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
         System.out.println("Insert (" + offset + ", " + data.length);
     }
 
+    //this one gets used by the system
     protected void insertUpdate(AbstractDocument.DefaultDocumentEvent evt, AttributeSet set) {
         System.out.println("insertUpdate");
         super.insertUpdate(evt, set);
@@ -19,16 +20,28 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
     }
 
     public SyntaxHighlighterDoc() {
-	    System.out.println("Empty constructor");
+        super();
+        constructor();
+	    //System.out.println("Empty constructor");
     }
 
     public SyntaxHighlighterDoc(AbstractDocument.Content c, StyleContext styles) {
         super(c, styles);
+        constructor();
         System.out.println("Content and styles");
     }
 
     public SyntaxHighlighterDoc(StyleContext styles) {
         super(styles);
+        constructor();
         System.out.println("Just styles");
+    }
+
+    private void constructor() {
+        try {
+            theme = Theme.fromFile("default_theme.txt");
+        } catch(Exception e) {
+            theme = new Theme("tag-* color 0 0 255");
+        }
     }
 }
