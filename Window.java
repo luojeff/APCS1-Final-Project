@@ -25,7 +25,7 @@ public class Window extends JFrame implements ActionListener {
      */
     public Window() {
 	this.setTitle(initTitle + " | New");
-	this.setSize(1500, 1000);
+	this.setSize(600, 400);
 	this.setResizable(true); // CAN DISABLE
 	this.setLocation(400, 100);
 	this.setDefaultCloseOperation(EXIT_ON_CLOSE);
