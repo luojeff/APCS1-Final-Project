@@ -115,7 +115,7 @@ public class Window extends JFrame implements ActionListener {
 	};
 		
 	AbstractButton[] menu3Options = { 
-	    new JCheckBoxMenuItem("Show HTML Visualizer"),
+	    new JCheckBoxMenuItem("Show HTML Visualizer", true),
 	    new JMenu("Change Font"),
 	    new JMenu("Change Font Size") 
 	};
@@ -198,6 +198,7 @@ public class Window extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 	Clipboard clipBoard = Toolkit.getDefaultToolkit().getSystemClipboard();
 	String event = e.getActionCommand();
+	Object source = e.getSource();
 
 	switch (event) {
 	case "New":
@@ -228,51 +229,51 @@ public class Window extends JFrame implements ActionListener {
 	    }
 	    break;
 	default:
-	    if (Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()).contains(event)){
-		editField.changeFont(event, editField.getFontSize());
-	    }
-	    if (event.matches("\\d+")){
-		System.out.println(event);
-		editField.changeFont(editField.getCurrentFont(), Integer.parseInt(event));
-	    }
-	    if (event.equals("Open") || event.equals("Save") || event.equals("Save As")){
-		if (event.equals("Open")) {
-		    fe.setRead(true);
-		    fe.revealExplorer();
+	    if (event.equals("Open")) {
+		fe.setRead(true);
+		fe.revealExplorer();
 
-		    if (fe.getFileName() != null) {
-			System.out.println(fe.getContents());
-			editField.setText(fe.getContents());
-			checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
-			this.setTitle(initTitle + " | " + fe.getFileName());
-			System.out.println("Current File: " + fe.getFileName());
-			visuals.updateVisualizer(fe.getFileName());
-		    }
-		} else if (event.equals("Save As")) {
-		    fe.setRead(false);
-		    fe.revealExplorer();
-
+		if (fe.getFileName() != null) {
+		    System.out.println(fe.getContents());
+		    editField.setText(fe.getContents());
 		    checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
 		    this.setTitle(initTitle + " | " + fe.getFileName());
 		    System.out.println("Current File: " + fe.getFileName());
 		    visuals.updateVisualizer(fe.getFileName());
-		} else {
-		    fe.setRead(false);
-
-		    if (checker == null) {
-			fe.revealExplorer();
-			checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
-			this.setTitle(initTitle + " | " + fe.getFileName());
-			System.out.println("Current File: " + fe.getFileName());
-			visuals.updateVisualizer(fe.getFileName());
-		    } else if (checker.isTextChanged(editField.getText())) {
-			fe.setAutoOverwrite(true, checker.returnFile());
-			fe.revealExplorer();
-			this.setTitle(initTitle + " | " + fe.getFileName());
-			System.out.println("Current File: " + checker.returnFileName());
-			visuals.updateVisualizer(fe.getFileName());
-		    }
 		}
+	    } else if (event.equals("Save As")) {
+		fe.setRead(false);
+		fe.revealExplorer();
+
+		checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
+		this.setTitle(initTitle + " | " + fe.getFileName());
+		System.out.println("Current File: " + fe.getFileName());
+		visuals.updateVisualizer(fe.getFileName());
+	    } else if (event.equals("Save")) {
+		fe.setRead(false);
+
+		if (checker == null) {
+		    fe.revealExplorer();
+		    checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
+		    this.setTitle(initTitle + " | " + fe.getFileName());
+		    System.out.println("Current File: " + fe.getFileName());
+		    visuals.updateVisualizer(fe.getFileName());
+		} else if (checker.isTextChanged(editField.getText())) {
+		    fe.setAutoOverwrite(true, checker.returnFile());
+		    fe.revealExplorer();
+		    this.setTitle(initTitle + " | " + fe.getFileName());
+		    System.out.println("Current File: " + checker.returnFileName());
+		    visuals.updateVisualizer(fe.getFileName());
+		}
+	    } else if (event.equals("Show HTML Visualizer")) {
+	        System.out.println(menuArrayList.get(2).getItem(0).isSelected());
+	    } else if (event.matches("\\d+")){
+		System.out.println(event);
+		editField.changeFont(editField.getCurrentFont(), Integer.parseInt(event));
+	    } else if (Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()).contains(event)){
+		editField.changeFont(event, editField.getFontSize());
+	    } else {
+		System.out.println("No defined action for event: " + event);
 	    }
 	    break;
 	}
