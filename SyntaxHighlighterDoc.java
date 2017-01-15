@@ -23,6 +23,7 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
         attrs.addAttribute(AbstractDocument.ElementNameAttribute, "testing");
         StyleConstants.setForeground(attrs, Color.red);
         super.insertUpdate(evt, set);
+        if(offset > 8) {reParse((BranchElement)getParagraphElement(offset));}
         //colorLine(getParagraphElement(offset), set);
         // try {
         //     this.insert(offset, new DefaultStyledDocument.ElementSpec[] {
@@ -63,7 +64,7 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
         return result;
     }
 
-    private void parseLine(BranchElement line) {
+    private void reParse(BranchElement line) {
         /*
         get each element of the line --> $1
         for each element:
@@ -77,7 +78,40 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
         for(int i = 0; i < before.length; i++) {
             before[i] = line.getElement(i);
         }
-        Element[] after = betterParse(unParse(before));
+        String[][] beforeRefine = unParse(before);
+        String toRefine = "";
+        try {
+            toRefine = getText(line.getStartOffset(), line.getEndOffset() - line.getStartOffset());
+        } catch(Exception err) {
+            for(String[] row : beforeRefine) {
+                toRefine += row[1];
+            }
+        }
+        if(getLength() < line.getEndOffset()) { //acount for EOF element on last line
+            toRefine = toRefine.substring(0, toRefine.length() - 1);
+            before = subarray(before, 0, before.length - 1);
+            beforeRefine = unParse(before);
+        }
+        String[][] afterRefine = refineHTML(beforeRefine[0][0], toRefine);
+        System.out.println(same(beforeRefine, afterRefine));
+        if(!same(beforeRefine, afterRefine)) {
+            printArr2d(beforeRefine);
+            printArr2d(afterRefine);
+            Element[] after = createLeaves(afterRefine, line.getStartOffset(), line);
+            System.out.println("Before-end: " + before[before.length - 1].getEndOffset() + "\tAfter-end: " + after[after.length - 1].getEndOffset());
+            //line.replace(0, beforeRefine.length, after);
+        }
+    }
+
+    private LeafElement[] createLeaves(String[][] contexts, int offset, BranchElement parent) {
+        LeafElement[] result = new LeafElement[contexts.length];
+        for(int i = 0; i < result.length; i++) {
+            SimpleAttributeSet set = theme.getStyle(contexts[i][0]);
+            set.addAttribute(AbstractDocument.ElementNameAttribute, contexts[i][0]);
+            result[i] = new LeafElement(parent, set, offset, offset + contexts[i][1].length());
+            offset += contexts[i][1].length();
+        }
+        return result;
     }
 
     private String[][] unParse(Element[] e) {
@@ -87,12 +121,51 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
             int start = e[i].getStartOffset(),
                 end   = e[i].getEndOffset();
             try {
-                result[i][1] = getText(start, end);
+                result[i][1] = getText(start, end - start);
             } catch(Exception err) {
                 result[i][1] = "";
             }
         }
         return result;
+    }
+
+    private Element[] subarray(Element[] arr, int start, int end) {
+        Element[] result = new Element[end - start];
+        for(int i = start; i < end; i++) {
+            result[i - start] = arr[i];
+        }
+        return result;
+    }
+
+    private String[][] refineHTML(String firstState, String content) {
+        ArrayList<String[]> pieces = new ArrayList<String[]>();
+        String current = firstState, next, building = "";
+        for(int i = 0; i < content.length(); i++) {
+            next = determineContext(current, building, content.charAt(i));
+            if(next.equals(current)) {
+                building += content.charAt(i);
+            } else {
+                if(building.length() > 0) {
+                    pieces.add(new String[] {current, building});
+                }
+                building = content.substring(i, i + 1);
+                current = next;
+            }
+        }
+        pieces.add(new String[] {current, building}); //add the last piece
+        return pieces.toArray(new String[0][]);
+    }
+
+    private String determineContext(String current, String content, char c) {
+        if(current.equals("tag-start")) {
+            if(content.length() == 0) {
+                if(c == '<') {return "tag-start";}
+                return ""; //its just text, not actually tag start
+            }
+            if(Character.isWhitespace(c)) {return "error-whitespaceInTagName";}
+            return "tag-name";
+        }
+        return determineState(current, c);
     }
 
     /**
@@ -117,6 +190,22 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
             }
         }
         return true;
+    }
+
+    public static void printArr2d(String[][] arr) {
+        String str = "";
+        for(String[] row : arr) {
+            str += "[";
+            for(int i = 0; i < row.length; i++) {
+                if(i + 1 == row.length) {
+                    str += "\"" + row[i] + "\"";
+                } else {
+                    str += "\"" + row[i] + "\", ";
+                }
+            }
+            str += "]\n";
+        }
+        System.out.println(str);
     }
 
     public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
@@ -157,7 +246,7 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
         String previous = context, current = "", building = "";
         int i = 0;
         while(i < insertion.length()) {
-            current = determineState(previous, insertion.charAt(i));
+            current = determineState(previous, building, insertion.charAt(i));
             //System.out.print("  Determined '" + current + "' from '" + insertion.charAt(i) + "' in '" + previous + "'");
             if(previous.equals(current)) {
                 //System.out.println(";  Continuing \"" + building + "\" in '" + current + "' with '" + insertion.charAt(i));
@@ -184,28 +273,24 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
      * determines the context that this character should have
      * based on the context it was inserted into
      */
-    public String determineState(String previous, char c) {
+    public String determineState(String previous, String content, char c) {
         if(previous.equals("")) {
             if(c == '<') {return "tag-start";}
         }
         if(previous.equals("tag-start")) {
             if(c == '>') {return "tag-end";}
-            else if(c == '!') {return "tag-special";}
-            else if(Character.isWhitespace(c)) {return "tag-start";}
+            else if(Character.isWhitespace(c)) {return "error-whitespaceInTagName";}
             else {return "tag-name";}
-        }
-        if(previous.equals("tag-special")) {
-            if(c == '-') {return "tag-special-comment-partial";}
-            return "tag-name";
-        }
-        if(previous.equals("tag-special-comment-partial")) {
-            if(c == '-') {return "html-comment";}
-            return "tag-name";
         }
         if(previous.equals("tag-name")) {
-            if(Character.isWhitespace(c)) {return "attribute-name";}
+            if(Character.isWhitespace(c)) {return "tag-content";}
             else if(c == '>') {return "tag-end";}
             else {return "tag-name";}
+        }
+        if(previous.equals("tag-content")) {
+            if(c == '/') {return "tag-end-almost";}
+            else if(Character.isWhitespace(c)) {return "tag-content";}
+            else {return "attribute-name";}
         }
         if(previous.equals("attribute-name")) {
             if(c == '>') {return "tag-end";}
@@ -218,14 +303,18 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
             return "attribute-value";
         }
         if(previous.equals("attribute-value")) {
-            if(c == '"') {return "attribute-value-quoted";}
+            if(c == '"') {return "error-illegalQuote";}
             if(c == '>') {return "tag-end";}
-            if(c == ' ') {return "attribute-name";}
+            if(c == ' ') {return "tag-content";}
             return "attribute-value";
         }
         if(previous.equals("attribute-value-quoted")) {
             if(c == '"') {return "attribute-value";}
             return "attribute-value-quoted";
+        }
+        if(previous.equals("tag-end-almost")) {
+            if(c == '>') {return "tag-end";}
+            return "tag-end-almost";
         }
         if(previous.equals("tag-end")) {
             if(c == '<') {return "tag-start";}
