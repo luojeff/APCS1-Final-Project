@@ -1,41 +1,52 @@
 # APCS1-Final-Project
 
-<h4> Text Editor (w/ HTML Viewing Capability) </h4>
+<h3> Text Editor (w/ HTML Viewing Capability) </h3>
 
 <h4> A functional GUI text editor with practical text-editor features. 
 
+<hr>
 <h4>Features:</h4>
 <ul>
 <li>Open, save, or create new files</li>
-<li>Customization (of appearance)</li>
-<li>HTML Visualizer (preview your HTML files)</li>
+<li>Basic customization of font</li>
+<li>Preview your HTML with an updating visualizer</li>
 </ul>
 
 <h4>How to use:</h4>
-Self-explanatory
+To display the visualizer, enable <b>Properties | Show HTML Visualizer</b>
+<br>
+Once you have the visualizer enabled, you must open or save your current file
+(if it's new). 
 
 <h4>Features in development:</h4>
 <ul>
 <li>Syntax support for HTML</li>
 <li>Auto-update for HTML Visualizer</li>
 <li>Tabs (for multiple files)</li>
+<li>Manually set keybinds</li>
 </ul>
 
+<hr>
 <h4>Compilation:</h4>
-If you're running Windows, run the batch file
+<i>Windows</i>: <br>
+Compile and run the batch file by typing:
 ```
-$run.bat
+$ run.bat
 ```
 <br>
-Else, 
-compile by typing:
+<i>Other</i>: <br>
+Compile by typing:
 ```
-$javac Main.java
+$ javac Main.java
 ```
-then:
+Then run:
 ```
-$java Main
+$ java Main
 ```
+
+<h4>Unresolved Bugs</h4>
+<ul>
+</ul>
 
 <p>
 Contributors:
