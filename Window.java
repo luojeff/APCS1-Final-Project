@@ -1,10 +1,13 @@
 import javax.swing.*;
-import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.awt.Toolkit;
 import java.awt.datatransfer.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.awt.GraphicsEnvironment;
+import java.text.DecimalFormat;
 
 public class Window extends JFrame implements ActionListener {
     private String initTitle = "Text Editor";
@@ -13,15 +16,6 @@ public class Window extends JFrame implements ActionListener {
     private LinePanel linePanel;
     private JMenuBar menuBar;
     private JMenu menu1, menu2, menu3, menu4;
-    private JMenu submenu1, submenu2;
-    private JMenuItem m1i1, m1i2, m1i3, m1i4, m1i5;
-    private JMenuItem m2i1, m2i2, m2i3, m2i4, m2i5;
-    private JMenuItem m3i1, m3i2, m3i3, m3i4, m3i5;
-    private JCheckBoxMenuItem m4i1;
-    //private JMenuItem m4i1, m4i2, m4i3, m4i4, m4i5;
-    private JMenuItem m5i1, m5i2, m5i3, m5i4, m5i5;
-    private JMenuItem m4s1i1, m4s1i2, m4s1i3;
-    private JMenuItem m4s2i1, m4s2i2, m4s2i3, m4s2i4, m4s2i5, m4s2i6;
     private JScrollPane scrollPane;
     private EditorArea editField;
     private Container pane;
@@ -31,7 +25,9 @@ public class Window extends JFrame implements ActionListener {
     private Dimension ssDimension;
     private ArrayList<JMenu> menuArrayList;
     private ArrayList<JMenuItem> menuItemList;
-      
+    private Rectangle dimensions;
+    private double splitPaneRatio;
+    private ArrayList<JMenu> menuArrayList;
 
     /*
      * Sets up the main window with two panels. One panel contains the menu bar,
@@ -39,18 +35,18 @@ public class Window extends JFrame implements ActionListener {
      * ActionListener
      */
     public Window() {
-	setup();	
+	setup();
 	setMenuBar();
-	setActionCommands();
 	setupVisuals();
     }
 
-    private void setup(){	
+    private void setup() {
 	this.setTitle(initTitle + " | New");
 	this.setSize(1300, 800);
-	this.setResizable(true); // CAN DISABLE
+	this.setResizable(true);
 	this.setLocation(400, 100);
 	this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+	this.addComponentListener(new WindowListener());
 
 	pane = this.getContentPane();
 
@@ -58,13 +54,14 @@ public class Window extends JFrame implements ActionListener {
 	textPanel = new JPanel(new BorderLayout());
 	visualizerPanel = new JPanel(new BorderLayout());
 	bottomPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, textPanel, visualizerPanel);
-	
-	Rectangle rec = this.getBounds();
-	ssDimension = new Dimension(rec.width / 3, rec.height);
-	textPanel.setMinimumSize(ssDimension);
-	visualizerPanel.setMinimumSize(ssDimension);
-     
-	bottomPanel.setDividerLocation(rec.width / 2);
+	bottomPanel.addComponentListener(new PanelListener());
+	dimensions = this.getBounds();
+
+	textPanel.setMinimumSize(new Dimension(dimensions.width / 3, dimensions.height));
+	visualizerPanel.setMinimumSize(new Dimension(dimensions.width / 3, dimensions.height));	
+
+	bottomPanel.setDividerLocation(dimensions.width / 2);
+	splitPaneRatio = 1/2.0;
 	bottomPanel.setOneTouchExpandable(true);
 	mainPanel = new JPanel();
 	mainPanel.setLayout(new BorderLayout());
@@ -73,130 +70,130 @@ public class Window extends JFrame implements ActionListener {
 	pane.add(mainPanel);
 
 	// Creates a menubar on the top which can contain the common
-	// functions of most editors (File, Edit, Options, Help, etc...)	
-	
+	// functions of most editors (File, Edit, Options, Help, etc...)
+
 	editField = new EditorArea("Monospaced", 18);
 	linePanel = new LinePanel(editField);
 	linePanel.changeFont(editField.getCurrentFont(), editField.getFontSize());
 	editField.setLinePanel(linePanel);
-	
+
 	textPanel.add(editField, BorderLayout.CENTER);
-	textPanel.add(linePanel, BorderLayout.WEST);	
+	textPanel.add(linePanel, BorderLayout.WEST);
 
 	fe = new FileExplorer(editField);
 	scrollPane = new JScrollPane(textPanel);
 	scrollPane.getVerticalScrollBar().setUnitIncrement(18);
-	bottomPanel.add(scrollPane);	
+	bottomPanel.add(scrollPane);
     }
 
-    private void setMenuBar(){
+    private void setMenuBar() {
 	menuBar = new JMenuBar();
 	menuPanel.add(menuBar);
 
 	// Submenus in menubar
 	menu1 = new JMenu("File");
 	menu2 = new JMenu("Edit");
-	menu3 = new JMenu("Help");
-	menu4 = new JMenu("Properties");
+	menu3 = new JMenu("Properties");
+	menu4 = new JMenu("Help");
 
-	menuBar.add(menu1);
-	menuBar.add(menu2);
-	menuBar.add(menu4);
-	menuBar.add(menu3);
+	menuArrayList = new ArrayList<JMenu>();
+	menuArrayList.add(menu1);
+	menuArrayList.add(menu2);
+	menuArrayList.add(menu3);
+	menuArrayList.add(menu4);
 
+	for (JMenu menu : menuArrayList) {
+	    menuBar.add(menu);
+	}
+
+	AbstractButton[] menu1Options = { 
+	    new JMenuItem("New") ,
+	    new JMenuItem("Open"), 
+	    new JMenuItem("Save"), 
+	    new JMenuItem("Save As"),
+	    new JMenuItem("Exit"),
+	};
+		
+	AbstractButton[] menu2Options = {
+	    new JMenuItem("Cut"),
+	    new JMenuItem("Copy"),
+	    new JMenuItem("Paste"),
+	    new JMenuItem("Clear"),
+	};
+		
+	AbstractButton[] menu3Options = { 
+	    new JCheckBoxMenuItem("Show HTML Visualizer", true),
+	    new JMenu("Change Font"),
+	    new JMenu("Change Font Size") 
+	};
+		
 	// Items in submenus
-	m1i1 = new JMenuItem("Open");
-	m1i2 = new JMenuItem("Save");
-	m1i3 = new JMenuItem("Save As");
-	m1i4 = new JMenuItem("Exit");
-	m1i5 = new JMenuItem("New");
-	m2i1 = new JMenuItem("Copy All");
-	m2i2 = new JMenuItem("Paste");
-	
-	m3i1 = new JMenuItem("About");
-	
-	submenu1 = new JMenu("Change Font");
-	submenu2 = new JMenu("Change Font Size");
+	JMenuItem[] fonts = {
+	    new JMenuItem("Arial"),
+	    new JMenuItem("Calibri"),
+	    new JMenuItem("Cambria"),
+	    new JMenuItem("Consolas"),
+	    new JMenuItem("Courier New"),
+	    new JMenuItem("Lucida Sans"),
+	    new JMenuItem("Monospaced"),
+	    new JMenuItem("Serif"),
+	    new JMenuItem("Times New Roman"),
+	    new JMenuItem("Trebuchet MS"),
+	    new JMenuItem("Verdana")
+	};
+		
+	JMenuItem[] fontSizes = { 
+	    new JMenuItem("12"), 
+	    new JMenuItem("14"), 
+	    new JMenuItem("16"), 
+	    new JMenuItem("18"), 
+	    new JMenuItem("20"), 
+	    new JMenuItem("22"),
+	    new JMenuItem("24"), 
+	    new JMenuItem("26"), 
+	    new JMenuItem("28"), 
+	    new JMenuItem("36"), 
+	    new JMenuItem("48"), 
+	    new JMenuItem("72")
+	};
+		
+	for(JMenuItem font : fonts){
+	    menu3Options[1].add(font);
+	    font.addActionListener(this);
+	} 
+		
+	for(JMenuItem fontSize : fontSizes){
+	    menu3Options[2].add(fontSize);
+	    fontSize.addActionListener(this);
+	}
 
-	m4i1 = new JCheckBoxMenuItem("Show HTML Visualizer");
-	// Font selections for submenu in submenu
-	m4s1i1 = new JMenuItem("Monospaced");
-	m4s1i2 = new JMenuItem("Consolas");
-	m4s1i3 = new JMenuItem("Arial");
+	JMenuItem[] menu4Options = { 
+	    new JMenuItem("About")
+	};
 
-	// Font sizes for submenu
-	m4s2i1 = new JMenuItem("12");
-	m4s2i2 = new JMenuItem("14");
-	m4s2i3 = new JMenuItem("16");
-	m4s2i4 = new JMenuItem("18");
-	m4s2i5 = new JMenuItem("20");
-	m4s2i6 = new JMenuItem("22");
+	AbstractButton[][] menus = { 
+	    menu1Options, 
+	    menu2Options, 
+	    menu3Options, 
+	    menu4Options
+	};
 
-	menu1.add(m1i5);
-	menu1.add(m1i1);
-	menu1.add(m1i2);
-	menu1.add(m1i3);
-	menu1.add(m1i4);
-	menu2.add(m2i1);
-	menu2.add(m2i2);
-	menu3.add(m3i1);
-	menu4.add(m4i1);
-	menu4.add(submenu1);
-	menu4.add(submenu2);
-	submenu1.add(m4s1i1);
-	submenu1.add(m4s1i2);
-	submenu1.add(m4s1i3);
-	submenu2.add(m4s2i1);
-	submenu2.add(m4s2i2);
-	submenu2.add(m4s2i3);
-	submenu2.add(m4s2i4);
-	submenu2.add(m4s2i5);
-	submenu2.add(m4s2i6);
+	int count = 0;
+	for (AbstractButton[] menuOps : menus) {
+	    for(AbstractButton ab : menuOps){
+		if(ab instanceof JMenuItem){
+		    menuArrayList.get(count).add(ab);
+		    ab.addActionListener(this);
+		    ab.setActionCommand(ab.getText());
+		}
+	    }
+	    count++;
+	}
     }
 
-    private void setActionCommands(){
-	m1i1.addActionListener(this);
-	m1i2.addActionListener(this);
-	m1i3.addActionListener(this);
-	m1i4.addActionListener(this);
-	m1i5.addActionListener(this);
-	m2i1.addActionListener(this);
-	m2i2.addActionListener(this);
-	m3i1.addActionListener(this);
-	m4i1.addActionListener(this);
-	m4s1i1.addActionListener(this);
-	m4s1i2.addActionListener(this);
-	m4s1i3.addActionListener(this);
-	m4s2i1.addActionListener(this);
-	m4s2i2.addActionListener(this);
-        m4s2i3.addActionListener(this);
-	m4s2i4.addActionListener(this);
-        m4s2i5.addActionListener(this);
-	m4s2i6.addActionListener(this);
-	
-	m1i1.setActionCommand("OPEN");
-	m1i2.setActionCommand("SAVE");
-	m1i3.setActionCommand("SAVEAS");
-	m1i4.setActionCommand("QUIT");
-	m1i5.setActionCommand("NEW");
-	m2i1.setActionCommand("COPY");
-	m2i2.setActionCommand("PASTE");
-	m3i1.setActionCommand("ABOUT");
-	m4i1.setActionCommand("ACTIVATE-VISUALS");
-	m4s1i1.setActionCommand("FONT-MONO");
-	m4s1i2.setActionCommand("FONT-CONSOLAS");
-	m4s1i3.setActionCommand("FONT-ARIAL");
-	m4s2i1.setActionCommand("12");
-	m4s2i2.setActionCommand("14");
-	m4s2i3.setActionCommand("16");
-	m4s2i4.setActionCommand("18");
-	m4s2i5.setActionCommand("20");
-	m4s2i6.setActionCommand("22");
-    }
-
-    private void setupVisuals(){
+    private void setupVisuals() {
 	visuals = new HTMLVisualizer(visualizerPanel);
-	if(checker != null){
+	if (checker != null) {
 	    visuals.setupVisualizer(checker.returnFileName());
 	} else {
 	    visuals.setupVisualizer("none");
@@ -204,104 +201,111 @@ public class Window extends JFrame implements ActionListener {
 	editField.setVisuals(visuals);
 	editField.setFileExplorer(fe);
     }
+
     public void actionPerformed(ActionEvent e) {
 	Clipboard clipBoard = Toolkit.getDefaultToolkit().getSystemClipboard();
-	String event = e.getActionCommand();	
-	
+	String event = e.getActionCommand();
+	Object source = e.getSource();
+
 	switch (event) {
-	case "NEW":
-	    if(checker != null && checker.isTextChanged(editField.getText())){
+	case "New":
+	    if (checker != null && checker.isTextChanged(editField.getText())) {
 		fe.setRead(false);
 		fe.revealExplorer();
 		setTitle(initTitle + " | New");
 		editField.setText("");
-		checker = new FileUpdateChecker(new File("none"),"");
+		checker = new FileUpdateChecker(new File("none"), "");
 	    } else {
 		setTitle(initTitle + " | New");
 		editField.setText("");
 	    }
 	    break;
-	case "QUIT":
+	case "Exit":
 	    System.exit(0);
 	    break;
-	case "COPY":
+	case "Copy":
 	    StringSelection str = new StringSelection(editField.getText());
 	    clipBoard.setContents(str, null);
 	    break;
-	case "PASTE":
+	case "Paste":
 	    Transferable t = clipBoard.getContents(this);
 	    try {
 		editField.appendText((String) t.getTransferData(DataFlavor.stringFlavor));
-	    } catch (Exception ex){
+	    } catch (Exception ex) {
 		System.out.println("No flavor!");
 	    }
 	    break;
-	case "FONT-MONO":
-	    editField.changeFont("Monospaced", editField.getFontSize());
-	    break;
-	case "FONT-CONSOLAS":
-	    editField.changeFont("Consolas", editField.getFontSize());
-	    break;
-	case "FONT-ARIAL":
-	    editField.changeFont("Arial", editField.getFontSize());
-	    break;
-	case "12":
-	    editField.changeFont(editField.getCurrentFont(), 12);
-	    break;
-	case "14":
-	    editField.changeFont(editField.getCurrentFont(), 14);
-	    break;
-	case "16":
-	    editField.changeFont(editField.getCurrentFont(), 16);
-	    break;
-	case "18":
-	    editField.changeFont(editField.getCurrentFont(), 18);
-	    break;
-	case "20":
-	    editField.changeFont(editField.getCurrentFont(), 20);
-	    break;
-	case "22":
-	    editField.changeFont(editField.getCurrentFont(), 22);
-	    break;
-	}
-
-	if(event.equals("SAVE") || event.equals("SAVEAS") || event.equals("OPEN")){
-	    if (event.equals("OPEN")) {
+	default:
+	    if (event.equals("Open")) {
 		fe.setRead(true);
 		fe.revealExplorer();
 
-		if(fe.getFileName() != null){
+		if (fe.getFileName() != null) {
+		    System.out.println(fe.getContents());
 		    editField.setText(fe.getContents());
 		    checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
 		    this.setTitle(initTitle + " | " + fe.getFileName());
 		    System.out.println("Current File: " + fe.getFileName());
 		    visuals.updateVisualizer(fe.getFileName());
 		}
-	    } else if (event.equals("SAVEAS")){				
+	    } else if (event.equals("Save As")) {
 		fe.setRead(false);
 		fe.revealExplorer();
-		
+
 		checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
 		this.setTitle(initTitle + " | " + fe.getFileName());
 		System.out.println("Current File: " + fe.getFileName());
 		visuals.updateVisualizer(fe.getFileName());
-	    } else {
-	        fe.setRead(false);
+	    } else if (event.equals("Save")) {
+		fe.setRead(false);
 
-		if(checker == null){
+		if (checker == null) {
 		    fe.revealExplorer();
 		    checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
 		    this.setTitle(initTitle + " | " + fe.getFileName());
 		    System.out.println("Current File: " + fe.getFileName());
 		    visuals.updateVisualizer(fe.getFileName());
-		} else if(checker.isTextChanged(editField.getText())) {
+		} else if (checker.isTextChanged(editField.getText())) {
 		    fe.setAutoOverwrite(true, checker.returnFile());
 		    fe.revealExplorer();
 		    this.setTitle(initTitle + " | " + fe.getFileName());
 		    System.out.println("Current File: " + checker.returnFileName());
 		    visuals.updateVisualizer(fe.getFileName());
-		}	
+		}
+	    } else if (event.equals("Show HTML Visualizer")) {
+	        if(!menuArrayList.get(2).getItem(0).isSelected()){
+		    bottomPanel.setDividerLocation(dimensions.width);
+		}
+		
+	    } else if (event.matches("\\d+")){
+		System.out.println(event);
+		editField.changeFont(editField.getCurrentFont(), Integer.parseInt(event));
+	    } else if (Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()).contains(event)){
+		editField.changeFont(event, editField.getFontSize());
+	    } else {
+		System.out.println("No defined action for event: " + event);
 	    }
+	    break;
 	}
-    }   
+    }
+
+    public class WindowListener implements ComponentListener {
+        public void componentHidden(ComponentEvent arg0) {}
+        public void componentMoved(ComponentEvent arg0) {}
+        public void componentResized(ComponentEvent arg0) {
+	    bottomPanel.setDividerLocation(splitPaneRatio);
+	}
+        public void componentShown(ComponentEvent arg0) {}
+    }
+
+    public class PanelListener implements ComponentListener {
+	public void componentHidden(ComponentEvent arg0) {}
+        public void componentMoved(ComponentEvent arg0) {}
+        public void componentResized(ComponentEvent arg0) {
+	    DecimalFormat df = new DecimalFormat("0.##");
+	    //System.out.println();
+	    splitPaneRatio = Double.valueOf(df.format((float)bottomPanel.getDividerLocation() / getContentPane().getWidth()));
+	}
+        public void componentShown(ComponentEvent arg0) {}
+    }
 }

@@ -4,12 +4,19 @@ public class FileUpdateChecker {
     private String originalContents;
     private String newContents; 
     private File file;
-    
+
+    /**
+     * Checks for file changes. Required for auto-overwrite
+     * in save functions.
+     */
     public FileUpdateChecker(File file, String originalContents){
 	this.file = file;
         this.originalContents = originalContents;
     }
 
+    /**
+     * Compares old contents with input
+     */
     public boolean isTextChanged(String newContents){
 	this.newContents = newContents;
 	return !(originalContents.equals(newContents));
@@ -19,12 +26,11 @@ public class FileUpdateChecker {
 	originalContents = newContents;
     }
 
-    
-    public String returnFileName(){
-	return file.getAbsolutePath();
-    }
-
     public File returnFile(){
 	return file;
     }
+
+    public String returnFileName(){
+	return file.getAbsolutePath();
+    }    
 }
