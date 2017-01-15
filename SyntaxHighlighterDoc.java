@@ -1,5 +1,6 @@
 import javax.swing.text.*;
 import java.awt.Color;
+import java.util.Random;
 
 public class SyntaxHighlighterDoc extends DefaultStyledDocument {
     private Theme theme;
@@ -18,6 +19,7 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
         attrs.addAttribute(AbstractDocument.ElementNameAttribute, "testing");
         StyleConstants.setForeground(attrs, Color.red);
         super.insertUpdate(evt, attrs);
+        //colorLine(getParagraphElement(offset), set);
         // try {
         //     this.insert(offset, new DefaultStyledDocument.ElementSpec[] {
         //         elemSpec(attrs, "", "", length)
@@ -26,6 +28,21 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
         //     System.out.println("Error");
         //     e.printStackTrace();
         // }
+    }
+
+    public void colorLine(Element l, AttributeSet set) {
+        AbstractDocument.BranchElement line = (AbstractDocument.BranchElement)l;
+        SimpleAttributeSet attrs = new SimpleAttributeSet(set);
+        attrs.removeAttribute(AbstractDocument.ElementNameAttribute);
+        attrs.addAttribute(AbstractDocument.ElementNameAttribute, "custom");
+        Random rng = new Random();
+        StyleConstants.setForeground(attrs, new Color(rng.nextInt(100), rng.nextInt(100), rng.nextInt(100)));
+        int start = line.getStartOffset();
+        int end = line.getEndOffset();
+        int lineLength = end - start;
+        if(end > this.getLength()) {end--;}
+        Element named = createLeafElement(line, attrs, start, end);
+        line.replace(line.getStartOffset(), lineLength, new Element[] {named});
     }
 
     private DefaultStyledDocument.ElementSpec elemSpec(AttributeSet set, String type, String dir, int len) {
