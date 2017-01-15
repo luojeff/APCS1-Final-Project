@@ -74,15 +74,10 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
             use line.replace(0, $1.length, $2)
         */
         Element[] before = new Element[line.getChildCount()];
-
         for(int i = 0; i < before.length; i++) {
             before[i] = line.getElement(i);
-            int start = before[i].getStartOffset(),
-                end   = before[i].getEndOffset();
-            if(end <= this.getLength()) {
-
-            }
         }
+        Element[] after = betterParse(unParse(before));
     }
 
     private String[][] unParse(Element[] e) {
@@ -108,6 +103,16 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
         if(e1.length != e2.length) {return false;}
         for(int i = 0; i < e1.length; i++) {
             if(!e1[i].getAttributes().isEqual(e2[i].getAttributes())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean same(String[][] p1, String[][] p2) {
+        if(p1.length != p2.length) {return false;}
+        for(int i = 0; i < p1.length; i++) {
+            if(!p1[i][0].equals(p2[i][0]) || !p1[i][1].equals(p2[i][1])) {
                 return false;
             }
         }
