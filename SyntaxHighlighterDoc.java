@@ -4,6 +4,7 @@ import javax.swing.text.AbstractDocument.LeafElement;
 import java.awt.Color;
 import java.util.Random;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 public class SyntaxHighlighterDoc extends DefaultStyledDocument {
     private Theme theme;
@@ -72,6 +73,31 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
         if the two arrays not the same:
             use line.replace(0, $1.length, $2)
         */
+        Element[] before = new Element[line.getChildCount()];
+
+        for(int i = 0; i < before.length; i++) {
+            before[i] = line.getElement(i);
+            int start = before[i].getStartOffset(),
+                end   = before[i].getEndOffset();
+            if(end <= this.getLength()) {
+
+            }
+        }
+    }
+
+    private String[][] unParse(Element[] e) {
+        String[][] result = new String[e.length][2];
+        for(int i = 0; i < result.length; i++) {
+            result[i][0] = getContext(e[i]);
+            int start = e[i].getStartOffset(),
+                end   = e[i].getEndOffset();
+            try {
+                result[i][1] = getText(start, end);
+            } catch(Exception err) {
+                result[i][1] = "";
+            }
+        }
+        return result;
     }
 
     /**
