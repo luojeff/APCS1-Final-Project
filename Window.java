@@ -5,6 +5,8 @@ import java.io.*;
 import java.awt.Toolkit;
 import java.awt.datatransfer.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.awt.GraphicsEnvironment;
 
 public class Window extends JFrame implements ActionListener {
     private String initTitle = "Text Editor";
@@ -105,9 +107,11 @@ public class Window extends JFrame implements ActionListener {
 	    new JMenuItem("Exit"),
 	};
 		
-	AbstractButton[] menu2Options = { 
-	    new JMenuItem("Copy All"), 
-	    new JMenuItem("Paste")
+	AbstractButton[] menu2Options = {
+	    new JMenuItem("Cut"),
+	    new JMenuItem("Copy"),
+	    new JMenuItem("Paste"),
+	    new JMenuItem("Clear"),
 	};
 		
 	AbstractButton[] menu3Options = { 
@@ -117,10 +121,18 @@ public class Window extends JFrame implements ActionListener {
 	};
 		
 	// Items in submenus
-	JMenuItem[] fonts = { 
-	    new JMenuItem("Monospaced"), 
+	JMenuItem[] fonts = {
+	    new JMenuItem("Arial"),
+	    new JMenuItem("Calibri"),
+	    new JMenuItem("Cambria"),
 	    new JMenuItem("Consolas"),
-	    new JMenuItem("Arial")
+	    new JMenuItem("Courier New"),
+	    new JMenuItem("Lucida Sans"),
+	    new JMenuItem("Monospaced"),
+	    new JMenuItem("Serif"),
+	    new JMenuItem("Times New Roman"),
+	    new JMenuItem("Trebuchet MS"),
+	    new JMenuItem("Verdana")
 	};
 		
 	JMenuItem[] fontSizes = { 
@@ -129,7 +141,13 @@ public class Window extends JFrame implements ActionListener {
 	    new JMenuItem("16"), 
 	    new JMenuItem("18"), 
 	    new JMenuItem("20"), 
-	    new JMenuItem("22")
+	    new JMenuItem("22"),
+	    new JMenuItem("24"), 
+	    new JMenuItem("26"), 
+	    new JMenuItem("28"), 
+	    new JMenuItem("36"), 
+	    new JMenuItem("48"), 
+	    new JMenuItem("72")
 	};
 		
 	for(JMenuItem font : fonts){
@@ -197,7 +215,7 @@ public class Window extends JFrame implements ActionListener {
 	case "Exit":
 	    System.exit(0);
 	    break;
-	case "Copy All":
+	case "Copy":
 	    StringSelection str = new StringSelection(editField.getText());
 	    clipBoard.setContents(str, null);
 	    break;
@@ -209,73 +227,54 @@ public class Window extends JFrame implements ActionListener {
 		System.out.println("No flavor!");
 	    }
 	    break;
-	case "Monospaced":
-	    editField.changeFont("Monospaced", editField.getFontSize());
-	    break;
-	case "Consolas":
-	    editField.changeFont("Consolas", editField.getFontSize());
-	    break;
-	case "Arial":
-	    editField.changeFont("Arial", editField.getFontSize());
-	    break;
-	case "12":
-	    editField.changeFont(editField.getCurrentFont(), 12);
-	    break;
-	case "14":
-	    editField.changeFont(editField.getCurrentFont(), 14);
-	    break;
-	case "16":
-	    editField.changeFont(editField.getCurrentFont(), 16);
-	    break;
-	case "18":
-	    editField.changeFont(editField.getCurrentFont(), 18);
-	    break;
-	case "20":
-	    editField.changeFont(editField.getCurrentFont(), 20);
-	    break;
-	case "22":
-	    editField.changeFont(editField.getCurrentFont(), 22);
-	    break;
-	}
+	default:
+	    if (Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()).contains(event)){
+		editField.changeFont(event, editField.getFontSize());
+	    }
+	    if (event.matches("\\d+")){
+		System.out.println(event);
+		editField.changeFont(editField.getCurrentFont(), Integer.parseInt(event));
+	    }
+	    if (event.equals("Open") || event.equals("Save") || event.equals("Save As")){
+		if (event.equals("Open")) {
+		    fe.setRead(true);
+		    fe.revealExplorer();
 
-	if (event.equals("Open") || event.equals("Save") || event.equals("Save As")){
-	    if (event.equals("Open")) {
-		fe.setRead(true);
-		fe.revealExplorer();
+		    if (fe.getFileName() != null) {
+			System.out.println(fe.getContents());
+			editField.setText(fe.getContents());
+			checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
+			this.setTitle(initTitle + " | " + fe.getFileName());
+			System.out.println("Current File: " + fe.getFileName());
+			visuals.updateVisualizer(fe.getFileName());
+		    }
+		} else if (event.equals("Save As")) {
+		    fe.setRead(false);
+		    fe.revealExplorer();
 
-		if (fe.getFileName() != null) {
-		    System.out.println(fe.getContents());
-		    editField.setText(fe.getContents());
 		    checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
 		    this.setTitle(initTitle + " | " + fe.getFileName());
 		    System.out.println("Current File: " + fe.getFileName());
 		    visuals.updateVisualizer(fe.getFileName());
-		}
-	    } else if (event.equals("Save As")) {
-		fe.setRead(false);
-		fe.revealExplorer();
+		} else {
+		    fe.setRead(false);
 
-		checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
-		this.setTitle(initTitle + " | " + fe.getFileName());
-		System.out.println("Current File: " + fe.getFileName());
-		visuals.updateVisualizer(fe.getFileName());
-	    } else {
-		fe.setRead(false);
-
-		if (checker == null) {
-		    fe.revealExplorer();
-		    checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
-		    this.setTitle(initTitle + " | " + fe.getFileName());
-		    System.out.println("Current File: " + fe.getFileName());
-		    visuals.updateVisualizer(fe.getFileName());
-		} else if (checker.isTextChanged(editField.getText())) {
-		    fe.setAutoOverwrite(true, checker.returnFile());
-		    fe.revealExplorer();
-		    this.setTitle(initTitle + " | " + fe.getFileName());
-		    System.out.println("Current File: " + checker.returnFileName());
-		    visuals.updateVisualizer(fe.getFileName());
+		    if (checker == null) {
+			fe.revealExplorer();
+			checker = new FileUpdateChecker(new File(fe.getFileName()), editField.getText());
+			this.setTitle(initTitle + " | " + fe.getFileName());
+			System.out.println("Current File: " + fe.getFileName());
+			visuals.updateVisualizer(fe.getFileName());
+		    } else if (checker.isTextChanged(editField.getText())) {
+			fe.setAutoOverwrite(true, checker.returnFile());
+			fe.revealExplorer();
+			this.setTitle(initTitle + " | " + fe.getFileName());
+			System.out.println("Current File: " + checker.returnFileName());
+			visuals.updateVisualizer(fe.getFileName());
+		    }
 		}
 	    }
+	    break;
 	}
     }
 }
