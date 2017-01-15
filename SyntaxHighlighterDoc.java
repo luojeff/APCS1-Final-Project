@@ -1,6 +1,7 @@
 import javax.swing.text.*;
 import java.awt.Color;
 import java.util.Random;
+import java.util.ArrayList;
 
 public class SyntaxHighlighterDoc extends DefaultStyledDocument {
     private Theme theme;
@@ -18,7 +19,7 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
         SimpleAttributeSet attrs = new SimpleAttributeSet(set);
         attrs.addAttribute(AbstractDocument.ElementNameAttribute, "testing");
         StyleConstants.setForeground(attrs, Color.red);
-        super.insertUpdate(evt, attrs);
+        super.insertUpdate(evt, set);
         //colorLine(getParagraphElement(offset), set);
         // try {
         //     this.insert(offset, new DefaultStyledDocument.ElementSpec[] {
@@ -60,8 +61,129 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
     }
 
     public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
-        super.insertString(offset, str, a);
-        System.out.println("inserString("+offset+","+str+")");
+        //super.insertString(offset, str, a);
+        //System.out.println("inserString("+offset+","+str+")");
+        Element context = this.getCharacterElement((offset == 0)? offset : offset - 1);
+        insertAll(offset, parseInsertion(getContext(context), str), a);
+    }
+
+    public void insertAll(int offset, String[][] pieces, AttributeSet set) throws BadLocationException {
+        for(String[] piece : pieces) {
+            SimpleAttributeSet named = new SimpleAttributeSet(set);
+            named.removeAttribute(AbstractDocument.ElementNameAttribute);
+            named.addAttribute(AbstractDocument.ElementNameAttribute, piece[0]);
+            named.addAttributes(theme.getStyle(piece[0]));
+            super.insertString(offset, piece[1], named);
+            offset += piece[1].length();
+        }
+    }
+
+    public String getContext(Element elem) {
+        if(elem.getName().equals("content")) {return "";}
+        return elem.getName();
+    }
+
+    /**
+     * Assigns contexts to the different structures within the string.
+     * Also goes through the string and breaks it up into syntax structures.
+     * @param context   the context that the insertion was inserted into
+     * @param insertion the string to parse
+     * @return a 2d string array where each String[] is of length two.
+     *         the first string is the context, and the second string
+     *         is the thing that context is describing. Example:<br>
+     *         <code>{context, string}</code>
+     */
+    public String[][] parseInsertion(String context, String insertion) {
+        ArrayList<String[]> pieces = new ArrayList<String[]>();
+        String previous = context, current = "", building = "";
+        int i = 0;
+        while(i < insertion.length()) {
+            current = determineState(previous, insertion.charAt(i));
+            //System.out.print("  Determined '" + current + "' from '" + insertion.charAt(i) + "' in '" + previous + "'");
+            if(previous.equals(current)) {
+                //System.out.println(";  Continuing \"" + building + "\" in '" + current + "' with '" + insertion.charAt(i));
+                building += insertion.substring(i, i+1);
+            } else {
+                if(building.length() > 0) {
+                    String[] p = {current, building};
+                    pieces.add(p);
+                }
+                building = insertion.substring(i, i+1);
+                previous = current;
+                //System.out.println(";  changed to state " + current);
+            }
+            i++;
+        }
+        String[] p = {current, building};
+        pieces.add(p);
+        //String[] s = {"", insertion};
+        //pieces.add(s);
+        return pieces.toArray(new String[0][]);
+    }
+
+    /**
+     * determines the context that this character should have
+     * based on the context it was inserted into
+     */
+    public String determineState(String previous, char c) {
+        if(previous.equals("")) {
+            if(c == '<') {return "tag-start";}
+        }
+        if(previous.equals("tag-start")) {
+            if(c == '>') {return "tag-end";}
+            else if(c == '!') {return "tag-special";}
+            else if(Character.isWhitespace(c)) {return "tag-start";}
+            else {return "tag-name";}
+        }
+        if(previous.equals("tag-special")) {
+            if(c == '-') {return "tag-special-comment-partial";}
+            return "tag-name";
+        }
+        if(previous.equals("tag-special-comment-partial")) {
+            if(c == '-') {return "html-comment";}
+            return "tag-name";
+        }
+        if(previous.equals("tag-name")) {
+            if(Character.isWhitespace(c)) {return "attribute-name";}
+            else if(c == '>') {return "tag-end";}
+            else {return "tag-name";}
+        }
+        if(previous.equals("attribute-name")) {
+            if(c == '>') {return "tag-end";}
+            else if(c == '=') {return "attribute-separator";}
+            else {return "attribute-name";}
+        }
+        if(previous.equals("attribute-separator")) {
+            if(c == '>') {return "tag-end";}
+            if(c == '"') {return "attribute-value-quoted";}
+            return "attribute-value";
+        }
+        if(previous.equals("attribute-value")) {
+            if(c == '"') {return "attribute-value-quoted";}
+            if(c == '>') {return "tag-end";}
+            if(c == ' ') {return "attribute-name";}
+            return "attribute-value";
+        }
+        if(previous.equals("attribute-value-quoted")) {
+            if(c == '"') {return "attribute-value";}
+            return "attribute-value-quoted";
+        }
+        if(previous.equals("tag-end")) {
+            if(c == '<') {return "tag-start";}
+        }
+        if(previous.equals("html-comment")) {
+            if(c == '-') {return "html-comment-1";}
+            return "html-comment";
+        }
+        if(previous.equals("html-comment-1")) {
+            if(c == '-') {return "html-comment-2";}
+            return "html-comment";
+        }
+        if(previous.equals("html-comment-2")) {
+            if(c == '>') {return "tag-end";}
+            return "html-comment";
+        }
+        return "";
     }
 
     public SyntaxHighlighterDoc() {
