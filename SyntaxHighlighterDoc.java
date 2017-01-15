@@ -1,4 +1,6 @@
 import javax.swing.text.*;
+import javax.swing.text.AbstractDocument.BranchElement;
+import javax.swing.text.AbstractDocument.LeafElement;
 import java.awt.Color;
 import java.util.Random;
 import java.util.ArrayList;
@@ -43,7 +45,7 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
         int lineLength = end - start;
         if(end > this.getLength()) {end--;}
         Element named = createLeafElement(line, attrs, start, end);
-        line.replace(line.getStartOffset(), lineLength, new Element[] {named});
+        line.replace(0, line.getElementCount() - 1, new Element[] {named});
     }
 
     private DefaultStyledDocument.ElementSpec elemSpec(AttributeSet set, String type, String dir, int len) {
@@ -58,6 +60,32 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
         result = new DefaultStyledDocument.ElementSpec(set, t, len);
         result.setDirection(d);
         return result;
+    }
+
+    private void parseLine(BranchElement line) {
+        /*
+        get each element of the line --> $1
+        for each element:
+            get its contents as a string
+            run string through a modified parseInsertions
+        create an array of elements based on those results --> $2
+        if the two arrays not the same:
+            use line.replace(0, $1.length, $2)
+        */
+    }
+
+    /**
+    * Checks if two sets of elements are equivalent in value.
+    * Has no care for object references.
+    */
+    private boolean same(Element[] e1, Element[] e2) {
+        if(e1.length != e2.length) {return false;}
+        for(int i = 0; i < e1.length; i++) {
+            if(!e1[i].getAttributes().isEqual(e2[i].getAttributes())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
