@@ -85,6 +85,7 @@ public class FileExplorer {
     
     public void readContents(File file) {
 	try {
+	    contents = "";
 	    BufferedReader reader = new BufferedReader(new FileReader(file));
 	    String line = reader.readLine();
 	    while (line != null) {
