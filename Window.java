@@ -7,6 +7,7 @@ import java.awt.datatransfer.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.awt.GraphicsEnvironment;
+import java.text.DecimalFormat;
 
 public class Window extends JFrame implements ActionListener {
     private String initTitle = "Text Editor";
@@ -21,7 +22,8 @@ public class Window extends JFrame implements ActionListener {
     private FileUpdateChecker checker;
     private FileExplorer fe;
     private HTMLVisualizer visuals;
-    private Dimension ssDimension;
+    private Rectangle dimensions;
+    private double splitPaneRatio;
     private ArrayList<JMenu> menuArrayList;
 
     /*
@@ -41,6 +43,7 @@ public class Window extends JFrame implements ActionListener {
 	this.setResizable(true);
 	this.setLocation(400, 100);
 	this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+	this.addComponentListener(new WindowListener());
 
 	pane = this.getContentPane();
 
@@ -48,13 +51,14 @@ public class Window extends JFrame implements ActionListener {
 	textPanel = new JPanel(new BorderLayout());
 	visualizerPanel = new JPanel(new BorderLayout());
 	bottomPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, textPanel, visualizerPanel);
+	bottomPanel.addComponentListener(new PanelListener());
+	dimensions = this.getBounds();
 
-	Rectangle rec = this.getBounds();
-	ssDimension = new Dimension(rec.width / 3, rec.height);
-	textPanel.setMinimumSize(ssDimension);
-	visualizerPanel.setMinimumSize(ssDimension);
+	textPanel.setMinimumSize(new Dimension(dimensions.width / 3, dimensions.height));
+	visualizerPanel.setMinimumSize(new Dimension(dimensions.width / 3, dimensions.height));	
 
-	bottomPanel.setDividerLocation(rec.width / 2);
+	bottomPanel.setDividerLocation(dimensions.width / 2);
+	splitPaneRatio = 1/2.0;
 	bottomPanel.setOneTouchExpandable(true);
 	mainPanel = new JPanel();
 	mainPanel.setLayout(new BorderLayout());
@@ -266,7 +270,10 @@ public class Window extends JFrame implements ActionListener {
 		    visuals.updateVisualizer(fe.getFileName());
 		}
 	    } else if (event.equals("Show HTML Visualizer")) {
-	        System.out.println(menuArrayList.get(2).getItem(0).isSelected());
+	        if(!menuArrayList.get(2).getItem(0).isSelected()){
+		    bottomPanel.setDividerLocation(dimensions.width);
+		}
+		
 	    } else if (event.matches("\\d+")){
 		System.out.println(event);
 		editField.changeFont(editField.getCurrentFont(), Integer.parseInt(event));
@@ -277,5 +284,25 @@ public class Window extends JFrame implements ActionListener {
 	    }
 	    break;
 	}
+    }
+
+    public class WindowListener implements ComponentListener {
+        public void componentHidden(ComponentEvent arg0) {}
+        public void componentMoved(ComponentEvent arg0) {}
+        public void componentResized(ComponentEvent arg0) {
+	    bottomPanel.setDividerLocation(splitPaneRatio);
+	}
+        public void componentShown(ComponentEvent arg0) {}
+    }
+
+    public class PanelListener implements ComponentListener {
+	public void componentHidden(ComponentEvent arg0) {}
+        public void componentMoved(ComponentEvent arg0) {}
+        public void componentResized(ComponentEvent arg0) {
+	    DecimalFormat df = new DecimalFormat("0.##");
+	    //System.out.println();
+	    splitPaneRatio = Double.valueOf(df.format((float)bottomPanel.getDividerLocation() / getContentPane().getWidth()));
+	}
+        public void componentShown(ComponentEvent arg0) {}
     }
 }
