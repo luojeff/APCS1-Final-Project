@@ -4,3 +4,5 @@ attribute-name          color 255 0 255
 attribute-separator     color 144 19 156
 attribute-value-*       color 27 127 209
 html-comment-*          color 100 100 100
+comment-*               color 100 100 100
+error-*                 background 255 230 230
