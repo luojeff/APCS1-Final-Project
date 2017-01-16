@@ -40,9 +40,9 @@ public class EditorArea extends JPanel {
 		 * ePane.getActionMap().put("keyA", new KeyAction("A")); Registers the
 		 * key "A" and advances to KeyAction class for action
 		 */
-		ePane.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK), "keyCopy");
+		ePane.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK), "keySave");
 		ePane.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_MASK), "emacs-up");
-		ePane.getActionMap().put("keyCopy", new KeyAction("copy"));
+		ePane.getActionMap().put("keySave", new KeyAction("save"));
 		ePane.getActionMap().put("emacs-up", new KeyAction("emacs-up"));
 
 		this.add(ePane);
@@ -135,11 +135,10 @@ public class EditorArea extends JPanel {
 
 		public void actionPerformed(ActionEvent e) {
 			switch (sequence) {
-			case "copy":
-				System.out.println("Copied (REPLACE)");
+			case "save":
+				save();
 				break;
 			case "emacs-up":
-				System.out.println("Cursor should move up");
 				break;
 			}
 		}
@@ -156,49 +155,41 @@ public class EditorArea extends JPanel {
 			 */
 
 			lineNums.update();
-			if (autoSaveFeature) {
-				try {
-					fe.setRead(false);
-					if (checker.isFileSet()) {
-						fe.setAutoOverwrite(true, checker.returnFile());
-						if (fe.revealExplorer()) {
-							visuals.updateVisualizer(fe.getFileName());
-							fe.disableAutoOverwrite();
-							checker.init(new File(fe.getFileName()), getText());
-							System.out.println("File saved to: " + fe.getFileName());
-						}
-					} else {
-						visuals.displayNone();
-					}
-				} catch (NullPointerException e) {
-					System.out.println("Save or open an HTML file to view visually!");
-				}
+			if (autoSaveFeature){
+				save();
 			}
 		}
 
 		public void removeUpdate(DocumentEvent evt) {
 			lineNums.update();
 			if (autoSaveFeature) {
-				try {
-					fe.setRead(false);
-					if (checker.isFileSet()) {
-						fe.setAutoOverwrite(true, checker.returnFile());
-						if (fe.revealExplorer()) {
-							visuals.updateVisualizer(fe.getFileName());
-							fe.disableAutoOverwrite();
-							checker.init(new File(fe.getFileName()), getText());
-							System.out.println("File saved to: " + fe.getFileName());
-						}
-					} else {
-						visuals.displayNone();
-					}
-				} catch (NullPointerException e) {
-					System.out.println("Save or open an HTML file to view visually!");
-				}
+				save();
 			}
 		}
 
 		public void changedUpdate(DocumentEvent evt) {
+		}
+	}
+	
+	/*
+	 * Purely for convenience purposes
+	 */
+	public void save(){
+		try {
+			fe.setRead(false);
+			if (checker.isFileSet()) {
+				fe.setAutoOverwrite(true, checker.returnFile());
+				if (fe.revealExplorer()) {
+					visuals.updateVisualizer(fe.getFileName());
+					fe.disableAutoOverwrite();
+					checker.init(new File(fe.getFileName()), getText());
+					System.out.println("File saved to: " + fe.getFileName());
+				}
+			} else {
+				visuals.displayNone();
+			}
+		} catch (NullPointerException e) {
+			//System.out.println("Save or open an HTML file to view visually!");
 		}
 	}
 

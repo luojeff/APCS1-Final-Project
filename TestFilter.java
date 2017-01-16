@@ -18,7 +18,7 @@ public class TestFilter extends DocumentFilter {
 
 	public void replace(FilterBypass fb, int offset, int length, String str, AttributeSet attr)
 			throws BadLocationException {
-		System.out.println("invoked");
+		//System.out.println("invoked");
 		DefaultStyledDocument doc = (DefaultStyledDocument) fb.getDocument();
 		Element context = doc.getCharacterElement((offset == 0) ? offset : (offset - 1));
 		replaceAll(fb, offset, length, parseInsertion(getContext(context), str), attr);
