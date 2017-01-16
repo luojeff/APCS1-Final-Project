@@ -1,6 +1,20 @@
 #default styles
+#variables are defined like this:
+$myVariable value goes here
+#and use like this:
+#<style>  <attribute> $myVariable;
+#If you have these styles:
+#foo-bar-left, foo-bar-center, foo-bar-right
+#You can set styles for all of them like this:
+#foo-bar-* <attribute>...
+#Attributes are separated by semicolons
+#foo-bar-*  color 0; italic; background 255
+#colors can be specified using
+#r g b  (or)  grayscale  (or)  $var
 tag-*                   color 0 0 255
 attribute-name          color 255 0 255
 attribute-separator     color 144 19 156
 attribute-value-*       color 27 127 209
 html-comment-*          color 100 100 100
+comment-*               color 100 100 100
+error-*                 background 255 230 230

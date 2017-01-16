@@ -141,6 +141,14 @@ public class Theme {
                     case "italic":
                         StyleConstants.setItalic(set, true);
                         break;
+                    case "background":
+                        try {
+                            Color bg = toColor(subarray(args, 1));
+                            StyleConstants.setBackground(set, bg);
+                        } catch(Exception e) {
+                            //nothing
+                        }
+                        break;
                 }
             }
         }
