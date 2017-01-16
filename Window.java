@@ -275,12 +275,14 @@ public class Window extends JFrame implements ActionListener {
 				}
 			} else if (event.equals("Show HTML Visualizer")) {
 				if (!menuArrayList.get(2).getItem(0).isSelected()) {
-					// MAKE THIS UNEXPANDABLE
-					bottomPanel.setDividerLocation(dimensions.width);
+					bottomPanel.getRightComponent().setVisible(false);
+					bottomPanel.setDividerLocation(1.0d);
+				} else {
+					bottomPanel.getRightComponent().setVisible(true);
+					bottomPanel.setDividerLocation(splitPaneRatio);
 				}
 			} else if (event.equals("Enable Auto-save")) {
 				if (!menuArrayList.get(2).getItem(1).isSelected()) {
-					// ADD FEATURE
 					editField.setAutoSaveFeature(false);
 				} else {
 					editField.setAutoSaveFeature(true);
@@ -309,7 +311,13 @@ public class Window extends JFrame implements ActionListener {
 		}
 
 		public void componentResized(ComponentEvent arg0) {
-			bottomPanel.setDividerLocation(splitPaneRatio);
+			if (!menuArrayList.get(2).getItem(0).isSelected()) {
+				bottomPanel.getRightComponent().setVisible(false);
+				bottomPanel.setDividerLocation(1.0d);
+			} else {
+				bottomPanel.getRightComponent().setVisible(true);
+				bottomPanel.setDividerLocation(splitPaneRatio);
+			}
 		}
 
 	}
