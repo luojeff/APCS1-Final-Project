@@ -14,6 +14,19 @@ public class HtmlSyntax {
             end = e;
         }
 
+        public Token(Element e) {
+            return new Token(getTokenName(e), e.getStartOffset(), e.getEndOffset());
+        }
+
+        public static String getTokenName(Element e) {
+            if(e.getName().equals("content")) {return "";}
+            return e.getName();
+        }
+
+        public int length() {
+            return end - start;
+        }
+
         public String toString() {
             return name + "[" + start + ":" + end + "]";
         }
