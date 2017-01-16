@@ -1,6 +1,8 @@
 import javax.swing.text.*;
 import javax.swing.text.AbstractDocument.BranchElement;
 import javax.swing.text.AbstractDocument.LeafElement;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentEvent.*;
 import java.awt.Color;
 import java.util.Random;
 import java.util.ArrayList;
@@ -23,7 +25,8 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
         attrs.addAttribute(AbstractDocument.ElementNameAttribute, "testing");
         StyleConstants.setForeground(attrs, Color.red);
         super.insertUpdate(evt, set);
-        if(offset > 8) {reParse((BranchElement)getParagraphElement(offset));}
+        BranchElement line = (BranchElement)getParagraphElement(offset);
+        //if(offset > 8) {reParse((BranchElement)getParagraphElement(offset));}
         //colorLine(getParagraphElement(offset), set);
         // try {
         //     this.insert(offset, new DefaultStyledDocument.ElementSpec[] {
@@ -34,6 +37,30 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
         //     e.printStackTrace();
         // }
     }
+
+    public int getStart(Element[] elems) {return elems[0].getStartOffset();}
+    public int getEnd(Element[] elems)   {return elems[elems.length - 1].getStartOffset();}
+    public String getText(Element e) {
+        try {
+            return getText(e.getStartOffset(), e.getEndOffset() - e.getStartOffset());
+        } catch(Exception err) {
+            return null;
+        }
+    }
+    public int getIndentation(int offset) {
+        BranchElement line = getParagraphElement(offset);
+        String text = getText(line);
+        if(text != null) {
+            int spaces = 0;
+            while(spaces < text.length()) {
+                if(text.charAt(spaces) == ' ') {spaces++;}
+                else if(text.charAt(spaces) == '\t') {spaces += 4;}
+                else {return spaces;}
+            }
+        }
+        return 0;
+    }
+
 
     public void colorLine(Element l, AttributeSet set) {
         AbstractDocument.BranchElement line = (AbstractDocument.BranchElement)l;
@@ -165,7 +192,7 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
             if(Character.isWhitespace(c)) {return "error-whitespaceInTagName";}
             return "tag-name";
         }
-        return determineState(current, c);
+        return determineState(current, content, c);
     }
 
     /**
@@ -247,6 +274,10 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
         int i = 0;
         while(i < insertion.length()) {
             current = determineState(previous, building, insertion.charAt(i));
+            if(current.startsWith("!")) {
+                current = current.substring(1); //get rid of !
+                previous = current; //change the context without making a new element
+            }
             //System.out.print("  Determined '" + current + "' from '" + insertion.charAt(i) + "' in '" + previous + "'");
             if(previous.equals(current)) {
                 //System.out.println(";  Continuing \"" + building + "\" in '" + current + "' with '" + insertion.charAt(i));
@@ -285,6 +316,7 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
         if(previous.equals("tag-name")) {
             if(Character.isWhitespace(c)) {return "tag-content";}
             else if(c == '>') {return "tag-end";}
+            else if((content + c).equals("!--")) {return "!comment-html";}
             else {return "tag-name";}
         }
         if(previous.equals("tag-content")) {
@@ -319,17 +351,9 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
         if(previous.equals("tag-end")) {
             if(c == '<') {return "tag-start";}
         }
-        if(previous.equals("html-comment")) {
-            if(c == '-') {return "html-comment-1";}
-            return "html-comment";
-        }
-        if(previous.equals("html-comment-1")) {
-            if(c == '-') {return "html-comment-2";}
-            return "html-comment";
-        }
-        if(previous.equals("html-comment-2")) {
-            if(c == '>') {return "tag-end";}
-            return "html-comment";
+        if(previous.equals("comment-html")) {
+            if(content.endsWith("--") && c == '>') {return "tag-end";}
+            return "comment-html";
         }
         return "";
     }
