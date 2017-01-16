@@ -112,7 +112,7 @@ public class Window extends JFrame implements ActionListener {
 				new JMenuItem("Clear"), };
 
 		AbstractButton[] menu3Options = { new JCheckBoxMenuItem("Show HTML Visualizer", true),
-				new JCheckBoxMenuItem("Enable Auto-save", false), new JMenu("Change Font"),
+				new JCheckBoxMenuItem("Enable Auto-save", true), new JMenu("Change Font"),
 				new JMenu("Change Font Size") };
 
 		// Items in submenus
@@ -281,6 +281,9 @@ public class Window extends JFrame implements ActionListener {
 			} else if (event.equals("Enable Auto-save")) {
 				if (!menuArrayList.get(2).getItem(1).isSelected()) {
 					// ADD FEATURE
+					editField.setAutoSaveFeature(false);
+				} else {
+					editField.setAutoSaveFeature(true);
 				}
 			} else if (event.matches("\\d+")) {
 				System.out.println(event);

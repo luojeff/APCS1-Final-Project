@@ -11,7 +11,6 @@ import javax.swing.text.*;
  * allows for interaction. Also has more appealing text font and size
  */
 public class EditorArea extends JPanel {
-	private String fontName;
 	private int fontSize;
 	private JTextPane ePane;
 	private StyledDocument doc;
@@ -22,12 +21,11 @@ public class EditorArea extends JPanel {
 	private HTMLVisualizer visuals;
 	private FileExplorer fe;
 	private FileUpdateChecker checker;
+	private Boolean autoSaveFeature = true;
 
 	public EditorArea(String fontName, int fontSize) {
 		super(new BorderLayout());
-		this.fontName = fontName;
 		this.fontSize = fontSize;
-		this.lineNums = lineNums;
 
 		doc = new DefaultStyledDocument();
 		ePane = new JTextPane(doc);
@@ -158,29 +156,53 @@ public class EditorArea extends JPanel {
 			 */
 
 			lineNums.update();
-			try {
-				fe.setRead(false);
-				if (checker.isFileSet()) {
-					fe.setAutoOverwrite(true, checker.returnFile());
-					if (fe.revealExplorer()) {
-						visuals.updateVisualizer(fe.getFileName());
-						fe.disableAutoOverwrite();
-						checker.init(new File(fe.getFileName()), getText());
-						System.out.println("File saved to: " + fe.getFileName());
+			if (autoSaveFeature) {
+				try {
+					fe.setRead(false);
+					if (checker.isFileSet()) {
+						fe.setAutoOverwrite(true, checker.returnFile());
+						if (fe.revealExplorer()) {
+							visuals.updateVisualizer(fe.getFileName());
+							fe.disableAutoOverwrite();
+							checker.init(new File(fe.getFileName()), getText());
+							System.out.println("File saved to: " + fe.getFileName());
+						}
+					} else {
+						visuals.displayNone();
 					}
-				} else {
-					visuals.displayNone();
+				} catch (NullPointerException e) {
+					System.out.println("Save or open an HTML file to view visually!");
 				}
-			} catch (NullPointerException e) {
-				System.out.println("Save or open an HTML file to view visually!");
 			}
 		}
 
 		public void removeUpdate(DocumentEvent evt) {
 			lineNums.update();
+			if (autoSaveFeature) {
+				try {
+					fe.setRead(false);
+					if (checker.isFileSet()) {
+						fe.setAutoOverwrite(true, checker.returnFile());
+						if (fe.revealExplorer()) {
+							visuals.updateVisualizer(fe.getFileName());
+							fe.disableAutoOverwrite();
+							checker.init(new File(fe.getFileName()), getText());
+							System.out.println("File saved to: " + fe.getFileName());
+						}
+					} else {
+						visuals.displayNone();
+					}
+				} catch (NullPointerException e) {
+					System.out.println("Save or open an HTML file to view visually!");
+				}
+			}
 		}
 
 		public void changedUpdate(DocumentEvent evt) {
 		}
+	}
+
+	public void setAutoSaveFeature(boolean autoSaveFeature) {
+		this.autoSaveFeature = autoSaveFeature;
 	}
 }
