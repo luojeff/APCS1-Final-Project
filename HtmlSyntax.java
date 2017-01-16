@@ -15,7 +15,7 @@ public class HtmlSyntax {
         }
 
         public Token(Element e) {
-            return new Token(getTokenName(e), e.getStartOffset(), e.getEndOffset());
+            this(getTokenName(e), e.getStartOffset(), e.getEndOffset());
         }
 
         public static String getTokenName(Element e) {
