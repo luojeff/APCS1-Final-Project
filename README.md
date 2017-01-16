@@ -10,10 +10,11 @@
 <li>Open, save, or create new files</li>
 <li>Basic customization of font</li>
 <li>Preview your HTML with an updating visualizer</li>
+<li>Auto-update for HTML Visualizer</li>
 </ul>
 
 <h4>How to use:</h4>
-To display the visualizer, enable <b>Properties | Show HTML Visualizer</b>
+To display the visualizer, enable <b>Properties » Show HTML Visualizer</b>
 <br>
 Once you have the visualizer enabled, you must open or save your current file
 (if it's new). 
@@ -21,7 +22,6 @@ Once you have the visualizer enabled, you must open or save your current file
 <h4>Features in development:</h4>
 <ul>
 <li>Syntax support for HTML</li>
-<li>Auto-update for HTML Visualizer</li>
 <li>Tabs (for multiple files)</li>
 <li>Manually set keybinds</li>
 </ul>
