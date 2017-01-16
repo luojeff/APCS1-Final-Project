@@ -27,7 +27,7 @@ public class EditorArea extends JPanel {
 		super(new BorderLayout());
 		this.fontSize = fontSize;
 
-		doc = new DefaultStyledDocument();
+		doc = new SyntaxHighlighterDoc();
 		ePane = new JTextPane(doc);
 		tf = new TestFilter();
 
@@ -155,14 +155,14 @@ public class EditorArea extends JPanel {
 			 */
 
 			lineNums.update();
-			if (autoSaveFeature){
+			if (checker.isFileSet() && autoSaveFeature){
 				save();
 			}
 		}
 
 		public void removeUpdate(DocumentEvent evt) {
 			lineNums.update();
-			if (autoSaveFeature) {
+			if (checker.isFileSet() && autoSaveFeature) {
 				save();
 			}
 		}
