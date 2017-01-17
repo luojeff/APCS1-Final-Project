@@ -2,7 +2,7 @@
 
 <h3> Text Editor (w/ HTML Viewing Capability) </h3>
 
-<h4> A functional GUI text editor with practical text-editor features. 
+<h4> A GUI text editor that allows you to view the HTML you create alongside. Offers syntax coloring and editing features.
 
 <hr>
 <h4>Features:</h4>
@@ -33,11 +33,12 @@ Once you have the visualizer enabled, you must open or save your current file
   + Sometimes when a file is opened the syntax highlighting is off
   + after deleting some code the visualizer will update but the syntax highlighter will not
   + Html comments are not colored properly all of the time
+  + Copy feature (in menu) copies entire code instead of selected region in cursor.
 
 <hr>
 <h4>Compilation:</h4>
 <i>Windows</i>: <br>
-Compile and run the batch file by typing:
+Compile and run by running the batch file:
 ```
 $ run.bat
 ```
