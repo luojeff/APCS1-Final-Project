@@ -178,9 +178,9 @@ public class Window extends JFrame implements ActionListener {
 						// When a file is set and HAS changed from original save
 
 						setTitle(initTitle + " | New");
-						editField.setText("");
 						checker.init(null, "");
 						fe.setFile(null);
+						editField.setText("");
 						visuals.displayNone();
 					}
 				} else {
@@ -188,18 +188,18 @@ public class Window extends JFrame implements ActionListener {
 					// save
 
 					setTitle(initTitle + " | New");
-					editField.setText("");
 					checker.init(null, "");
 					fe.setFile(null);
+					editField.setText("");
 					visuals.displayNone();
 				}
 			} else {
 				// When no file is set; purely from scratch
 
 				setTitle(initTitle + " | New");
-				editField.setText("");
 				checker.init(null, "");
 				fe.setFile(null);
+				editField.setText("");
 				visuals.displayNone();
 			}
 			break;
