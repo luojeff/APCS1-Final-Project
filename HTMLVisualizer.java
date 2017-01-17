@@ -27,7 +27,7 @@ public class HTMLVisualizer extends JPanel {
 			doc.putProperty(Document.StreamDescriptionProperty, null);
 			visualizer.setPage((new File(fileName)).toURI().toURL());
 		} catch (IOException e) {
-			//System.out.println("Can't retrieve HTML!");
+			System.out.println("Can't retrieve HTML!");
 		}
 	}
 	

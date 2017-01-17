@@ -183,13 +183,13 @@ public class EditorArea extends JPanel {
 					visuals.updateVisualizer(fe.getFileName());
 					fe.disableAutoOverwrite();
 					checker.init(new File(fe.getFileName()), getText());
-					System.out.println("File saved to: " + fe.getFileName());
+					//System.out.println("File saved to: " + fe.getFileName());
 				}
 			} else {
 				visuals.displayNone();
 			}
 		} catch (NullPointerException e) {
-			//System.out.println("Save or open an HTML file to view visually!");
+			System.out.println("Save or open an HTML file to view visually!");
 		}
 	}
 

@@ -13,14 +13,14 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
 
     protected void insert(int offset, DefaultStyledDocument.ElementSpec[] data) throws BadLocationException {
         super.insert(offset, data);
-        System.out.println("Insert (" + offset + ", " + data.length);
+        //System.out.println("Insert (" + offset + ", " + data.length);
     }
 
     //this one gets used by the system
     protected void insertUpdate(AbstractDocument.DefaultDocumentEvent evt, AttributeSet set) {
-        System.out.println("insertUpdate");
+        //System.out.println("insertUpdate");
         int offset = ((evt.getOffset() == 0)? 0 : evt.getOffset() - 1), length = evt.getLength();
-        System.out.println("off: "+offset+", len: "+length+", doc:"+this.getLength());
+        //System.out.println("off: "+offset+", len: "+length+", doc:"+this.getLength());
         SimpleAttributeSet attrs = new SimpleAttributeSet(set);
         attrs.addAttribute(AbstractDocument.ElementNameAttribute, "testing");
         StyleConstants.setForeground(attrs, Color.red);
@@ -120,12 +120,12 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
             beforeRefine = unParse(before);
         }
         String[][] afterRefine = refineHTML(beforeRefine[0][0], toRefine);
-        System.out.println(same(beforeRefine, afterRefine));
+        //System.out.println(same(beforeRefine, afterRefine));
         if(!same(beforeRefine, afterRefine)) {
             printArr2d(beforeRefine);
             printArr2d(afterRefine);
             Element[] after = createLeaves(afterRefine, line.getStartOffset(), line);
-            System.out.println("Before-end: " + before[before.length - 1].getEndOffset() + "\tAfter-end: " + after[after.length - 1].getEndOffset());
+            //System.out.println("Before-end: " + before[before.length - 1].getEndOffset() + "\tAfter-end: " + after[after.length - 1].getEndOffset());
             //line.replace(0, beforeRefine.length, after);
         }
     }
@@ -232,7 +232,7 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
             }
             str += "]\n";
         }
-        System.out.println(str);
+        //System.out.println(str);
     }
 
     public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
@@ -367,13 +367,13 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
     public SyntaxHighlighterDoc(AbstractDocument.Content c, StyleContext styles) {
         super(c, styles);
         constructor();
-        System.out.println("Content and styles");
+        //System.out.println("Content and styles");
     }
 
     public SyntaxHighlighterDoc(StyleContext styles) {
         super(styles);
         constructor();
-        System.out.println("Just styles");
+        //System.out.println("Just styles");
     }
 
     private void constructor() {

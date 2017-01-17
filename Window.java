@@ -229,7 +229,7 @@ public class Window extends JFrame implements ActionListener {
 					if (fe.revealExplorer()) {	
 						fe.disableAutoOverwrite();
 						checker.init(new File(fe.getFileName()), editField.getText());
-						System.out.println("File saved to: " + fe.getFileName());
+						//System.out.println("File saved to: " + fe.getFileName());
 					}
 				}
 				fe.setRead(true);
@@ -237,7 +237,7 @@ public class Window extends JFrame implements ActionListener {
 					checker.init(new File(fe.getFileName()), fe.getContents());
 					editField.setText(fe.getContents());
 					this.setTitle(initTitle + " | " + fe.getFileName());
-					System.out.println("Current File: " + fe.getFileName());
+					//System.out.println("Current File: " + fe.getFileName());
 					visuals.updateVisualizer(fe.getFileName());
 				}
 			} else if (event.equals("Save As")) {
@@ -246,7 +246,7 @@ public class Window extends JFrame implements ActionListener {
 				if (fe.revealExplorer()) {
 					checker.init(new File(fe.getFileName()), editField.getText());
 					this.setTitle(initTitle + " | " + fe.getFileName());
-					System.out.println("File saved to: " + fe.getFileName());
+					//System.out.println("File saved to: " + fe.getFileName());
 					visuals.updateVisualizer(fe.getFileName());
 				}
 			} else if (event.equals("Save")) {
@@ -260,13 +260,13 @@ public class Window extends JFrame implements ActionListener {
 							visuals.updateVisualizer(fe.getFileName());
 							fe.disableAutoOverwrite();
 
-							System.out.println("File saved to: " + fe.getFileName());
+							//System.out.println("File saved to: " + fe.getFileName());
 						}
 					} else {
 						System.out.println("File has not changed. No save");
 					}
 				} else {
-					System.out.println("FileExplorer is null");
+					//System.out.println("FileExplorer is null");
 					if (fe.revealExplorer()) {
 						checker.init(new File(fe.getFileName()), editField.getText());
 						this.setTitle(initTitle + " | " + fe.getFileName());
@@ -288,7 +288,7 @@ public class Window extends JFrame implements ActionListener {
 					editField.setAutoSaveFeature(true);
 				}
 			} else if (event.matches("\\d+")) {
-				System.out.println(event);
+				//System.out.println(event);
 				editField.changeFont(editField.getCurrentFont(), Integer.parseInt(event));
 			} else if (Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames())
 					.contains(event)) {
