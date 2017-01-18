@@ -48,7 +48,7 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
         }
     }
     public int getIndentation(int offset) {
-        BranchElement line = getParagraphElement(offset);
+        BranchElement line = (BranchElement)getParagraphElement(offset);
         String text = getText(line);
         if(text != null) {
             int spaces = 0;
@@ -59,6 +59,10 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
             }
         }
         return 0;
+    }
+    public void setTheme(Theme newTheme) {
+        this.theme = newTheme;
+        ((TestFilter)getDocumentFilter()).theme = newTheme;
     }
 
 
