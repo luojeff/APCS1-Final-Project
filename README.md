@@ -26,7 +26,7 @@ You can <b>Save</b> or <b>Open</b> files in <b>File</b>
 
 ####Features in developmentt
   + Syntax support for HTML
-  + Cutting and copying a region. Currently, <b>Copy</b> copies the text in the entire region.
+  + Cutting and copying a region. Currently, <b>Copy</b> copies the text in the entire text area.
   + Tabs (for multiple files)
   + Manually set keybinds
   + Figure out how to recolor html code after deletions are made
