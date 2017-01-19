@@ -41,6 +41,22 @@ public class TestFilter extends DocumentFilter {
     }
 
     /**
+    * Usually called when the setText() method is invoked. In this
+    * program, that only happens when a new document is opened, so
+    * it is assumed that the previous context should be reset to text
+    */
+    public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+        String[][] pieces = parseInsertion("", string); //ignore previous style information
+        for(String[] piece : pieces) {
+            SimpleAttributeSet named = new SimpleAttributeSet(attr);
+            named.addAttribute(AbstractDocument.ElementNameAttribute, piece[0]);
+            named.addAttributes(theme.getStyle(piece[0]));
+            super.insertString(fb, offset, piece[1], named);
+            offset += piece[1].length();
+        }
+    }
+
+    /**
      * deprecated, here for legacy purposes. charState is no longer used.
      */
     public String getContext(AttributeSet set) {
@@ -132,6 +148,10 @@ public class TestFilter extends DocumentFilter {
         int i = 0;
         while(i < insertion.length()) {
             current = determineState(previous, insertion.charAt(i));
+            if(current.startsWith("!")) {
+                current = current.substring(1);
+                previous = current;
+            }
             //System.out.print("  Determined '" + current + "' from '" + insertion.charAt(i) + "' in '" + previous + "'");
             if(previous.equals(current)) {
                 //System.out.println(";  Continuing \"" + building + "\" in '" + current + "' with '" + insertion.charAt(i));
