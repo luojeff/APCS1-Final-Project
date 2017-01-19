@@ -185,22 +185,19 @@ public class TestFilter extends DocumentFilter {
         }
         if(previous.equals("tag-start")) {
             if(c == '>') {return "tag-end";}
-            else if(c == '!') {return "tag-special";}
             else if(Character.isWhitespace(c)) {return "tag-start";}
             else {return "tag-name";}
         }
-        if(previous.equals("tag-special")) {
-            if(c == '-') {return "tag-special-comment-partial";}
-            return "tag-name";
-        }
-        if(previous.equals("tag-special-comment-partial")) {
-            if(c == '-') {return "html-comment";}
-            return "tag-name";
-        }
         if(previous.equals("tag-name")) {
-            if(Character.isWhitespace(c)) {return "attribute-name";}
+            if(Character.isWhitespace(c)) {return "tag-content";}
             else if(c == '>') {return "tag-end";}
+            else if((content + c).equals("!--")) {return "!html-comment";}
             else {return "tag-name";}
+        }
+        if(previous.equals("tag-content")) {
+            if(c == '/') {return "tag-end-almost";}
+            else if(Character.isWhitespace(c)) {return "tag-content";}
+            else {return "attribute-name";}
         }
         if(previous.equals("attribute-name")) {
             if(c == '>') {return "tag-end";}
@@ -222,20 +219,19 @@ public class TestFilter extends DocumentFilter {
             if(c == '"') {return "attribute-value";}
             return "attribute-value-quoted";
         }
+        if(previous.equals("tag-end-almost")) {
+            if(c == '>') {return "tag-end";}
+            return "tag-end-almost";
+        }
         if(previous.equals("tag-end")) {
             if(c == '<') {return "tag-start";}
         }
         if(previous.equals("html-comment")) {
-            if(c == '-') {return "html-comment-1";}
+            if((content + c).endsWith("-->")) {return "html-comment-end";}
             return "html-comment";
         }
-        if(previous.equals("html-comment-1")) {
-            if(c == '-') {return "html-comment-2";}
-            return "html-comment";
-        }
-        if(previous.equals("html-comment-2")) {
-            if(c == '>') {return "tag-end";}
-            return "html-comment";
+        if(previous.equals("html-comment-end")) {
+            if(c == '<') {return "tag-start";}
         }
         return "";
     }
