@@ -58,9 +58,17 @@ public class TestFilter extends DocumentFilter {
 
     /**
      * Inserts each "piece" of the 2d array individually, making a new element each time
+     * Also pads newlines for auto-indentation
      * @param pieces A 2d string array in the format returned by parseInsertion
      */
     public void replaceAll(FilterBypass fb, int offset, int length, String[][] pieces, AttributeSet set) throws BadLocationException {
+        if(pieces.length == 1 && pieces[0][1].equals("\n")) { //indentation logic
+            int indent = ((SyntaxHighlighterDoc)fb.getDocument()).getIndentation(offset);
+            while(indent > 0) {
+                pieces[0][1] += " ";
+                indent--;
+            }
+        }
         for(String[] piece : pieces) {
             SimpleAttributeSet named = new SimpleAttributeSet(set);
             //System.out.println("Name of \"" + piece[1] + "\" is " + set.getAttribute(AbstractDocument.ElementNameAttribute));
