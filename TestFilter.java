@@ -147,7 +147,7 @@ public class TestFilter extends DocumentFilter {
         String previous = context, current = "", building = "";
         int i = 0;
         while(i < insertion.length()) {
-            current = determineState(previous, insertion.charAt(i));
+            current = determineState(previous, building, insertion.charAt(i));
             if(current.startsWith("!")) {
                 current = current.substring(1);
                 previous = current;
@@ -176,9 +176,10 @@ public class TestFilter extends DocumentFilter {
 
     /**
      * determines the context that this character should have
-     * based on the context it was inserted into
+     * based on the context it was inserted into and contents
+     * of the current context
      */
-    public String determineState(String previous, char c) {
+    public String determineState(String previous, String content, char c) {
         if(previous.equals("")) {
             if(c == '<') {return "tag-start";}
         }
