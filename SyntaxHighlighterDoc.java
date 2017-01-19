@@ -239,7 +239,7 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
         System.out.println(str);
     }
 
-    public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
+    /*public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
         //super.insertString(offset, str, a);
         //System.out.println("inserString("+offset+","+str+")");
         Element context = this.getCharacterElement((offset == 0)? offset : offset - 1);
@@ -255,7 +255,7 @@ public class SyntaxHighlighterDoc extends DefaultStyledDocument {
             super.insertString(offset, piece[1], named);
             offset += piece[1].length();
         }
-    }
+    }*/
 
     public String getContext(Element elem) {
         if(elem.getName().equals("content")) {return "";}
